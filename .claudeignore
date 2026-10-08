@@ -1,0 +1,10 @@
+vendor/
+node_modules/
+.git/
+storage/framework/
+storage/logs/
+bootstrap/cache/
+.phpunit.result.cache
+composer.lock
+package-lock.json
+.env
