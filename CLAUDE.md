@@ -11,7 +11,7 @@
 3. **Guardrails & Pitfalls:** A quick breakdown of potential bugs, security edge cases, or optimization problems to watch out for.
 
 ## Technical Framework Rules
-- Laravel 11+ conventions, strict PHP typing, Pest testing patterns.
+- Laravel 11+ conventions, Pest testing patterns.
 
 ## Strict Scope & Requirement Guardrails
 - Rely EXCLUSIVELY on the attached requirements document for application scope, business logic, and feature specifications.
