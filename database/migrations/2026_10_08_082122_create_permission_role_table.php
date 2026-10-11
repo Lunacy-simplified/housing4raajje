@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('permission_role', function (Blueprint $table) {            
+        Schema::create('permission_role', function (Blueprint $table) {
             $table->foreignId('permission_id')->comment('Foreign key reference mapping back to the primary permissions structural definitions table')->constrained()->cascadeOnDelete();
             $table->foreignId('role_id')->comment('Foreign key reference mapping back to the primary system application roles definitions table')->constrained()->cascadeOnDelete();
 
