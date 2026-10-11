@@ -12,12 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
+            $table->id()->comment('Auto-incrementing primary key for the users table');
+            $table->foreignId('role_id')->comment('Role that decides what this user can access')->index()->constrained('roles');
+            $table->string('name', 255)->comment('Full name of the user');
+            $table->string('email', 255)->nullable()->unique()->comment('Login email address; optional, unique when present');
+            $table->timestampTz('email_verified_at')->nullable()->comment('When the user confirmed their email address; empty until verified');
+            $table->string('phone', 20)->nullable()->unique()->comment('Contact number; attached to an owner\'s listings once verified');
+            $table->timestampTz('phone_verified_at')->nullable()->comment('When the phone number was verified; empty until verified');
+            $table->string('password', 255)->comment('Hashed password');
+            $table->boolean('is_active')->default(true)->comment('False deactivates the account without deleting its history');
+            $table->rememberToken()->comment('Laravel “remember me” login token');
             $table->timestamps();
         });
 
