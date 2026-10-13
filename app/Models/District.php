@@ -4,8 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable('name', 'branch_id', 'is_active')]
+#[Fillable(
+    'name',
+    'branch_id',
+    'is_active'
+)]
+
 class District extends Model
 {
     protected function casts(): array
@@ -15,8 +22,13 @@ class District extends Model
         ];
     }
 
-    public function branch()
+    public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);
+    }
+
+    public function properties(): HasMany
+    {
+        return $this->hasMany(Property::class);
     }
 }

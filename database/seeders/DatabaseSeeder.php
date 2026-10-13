@@ -18,6 +18,9 @@ class DatabaseSeeder extends Seeder
             BranchSeeder::class,
             DistrictSeeder::class,
             RoleSeeder::class,
+            FeedbackCategorySeeder::class,
+            LeaseTermSeeder::class,
+            PaymentMethodSeeder::class,
         ]);
     }
 }

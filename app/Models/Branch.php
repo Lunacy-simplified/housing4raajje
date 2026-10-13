@@ -4,8 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable('branch_no', 'code', 'name', 'phone', 'is_active')]
+#[Fillable(
+    'branch_no',
+    'code',
+    'name',
+    'phone',
+    'is_active'
+)]
+
 class Branch extends Model
 {
     protected function casts(): array
@@ -16,12 +24,17 @@ class Branch extends Model
         ];
     }
 
-    public function districts()
+    public function properties(): HasMany
+    {
+        return $this->hasMany(Property::class);
+    }
+
+    public function districts(): HasMany
     {
         return $this->hasMany(District::class);
     }
 
-    public function staffProfiles()
+    public function staffProfiles(): HasMany
     {
         return $this->hasMany(StaffProfile::class);
     }

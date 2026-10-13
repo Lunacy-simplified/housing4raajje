@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
-
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 #[Table(name: 'client_profiles', key: 'user_id', incrementing: false)]
+
 #[Fillable([
     'national_id_or_passport',
     'sex',
@@ -29,12 +31,12 @@ class ClientProfile extends Model
         ];
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function preferredBranches()
+    public function preferredBranches(): BelongsToMany
     {
         return $this->belongsToMany(
             Branch::class,
