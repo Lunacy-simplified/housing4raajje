@@ -66,4 +66,9 @@ class Property extends Model
     {
         return $this->hasMany(Application::class);
     }
+
+    public function leases(): HasMany
+    {
+        return $this->hasMany(Lease::class);
+    }
 }

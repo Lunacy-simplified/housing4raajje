@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Attributes\Refreshes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Refreshes('reference')]
 #[Fillable(
@@ -35,6 +36,11 @@ class Application extends Model
     public function client(): BelongsTo
     {
         return $this->belongsTo(User::class, 'client_user_id');
+    }
+
+    public function lease(): HasOne
+    {
+        return $this->hasOne(Lease::class);
     }
 
     public function leaseTerm(): BelongsTo

@@ -48,9 +48,19 @@ class User extends Authenticatable
         return $this->hasOne(OwnerProfile::class, 'user_id');
     }
 
+    public function ownerLeases(): HasMany
+    {
+        return $this->hasMany(Lease::class, 'owner_user_id');
+    }
+
     public function clientProfile(): HasOne
     {
         return $this->hasOne(ClientProfile::class, 'user_id');
+    }
+
+    public function clientLeases(): HasMany
+    {
+        return $this->hasMany(Lease::class, 'client_user_id');
     }
 
     public function ownedProperties(): HasMany
@@ -81,5 +91,10 @@ class User extends Authenticatable
     public function reviewedApplications(): HasMany
     {
         return $this->hasMany(Application::class, 'reviewed_by_user_id');
+    }
+
+    public function payouts(): HasMany
+    {
+        return $this->hasMany(Payout::class, 'owner_user_id');
     }
 }
