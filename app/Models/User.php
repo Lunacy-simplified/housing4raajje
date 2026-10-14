@@ -23,7 +23,7 @@ class User extends Authenticatable
 {
     use Notifiable;
 
-    protected function casts()
+    protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
@@ -56,5 +56,30 @@ class User extends Authenticatable
     public function ownedProperties(): HasMany
     {
         return $this->hasMany(Property::class, 'owner_user_id');
+    }
+
+    public function viewings(): HasMany
+    {
+        return $this->hasMany(Viewing::class, 'client_user_id');
+    }
+
+    public function applications(): HasMany
+    {
+        return $this->hasMany(Application::class, 'client_user_id');
+    }
+
+    public function scheduledViewings(): HasMany
+    {
+        return $this->hasMany(Viewing::class, 'scheduled_by_user_id');
+    }
+
+    public function loggedViewings(): HasMany
+    {
+        return $this->hasMany(Viewing::class, 'logged_by_user_id');
+    }
+
+    public function reviewedApplications(): HasMany
+    {
+        return $this->hasMany(Application::class, 'reviewed_by_user_id');
     }
 }

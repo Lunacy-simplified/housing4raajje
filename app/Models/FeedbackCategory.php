@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
-
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
     'label',
@@ -21,5 +21,10 @@ class FeedbackCategory extends Model
             'is_rejection' => 'boolean',
             'is_active'    => 'boolean',
         ];
+    }
+
+    public function viewings(): HasMany
+    {
+        return $this->hasMany(Viewing::class, 'feedback_category_id');
     }
 }

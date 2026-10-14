@@ -23,7 +23,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 #[Refreshes('reference')]
 class Property extends Model
 {
-    protected function casts()
+    protected function casts(): array
     {
         return [
             'monthly_rent' => 'decimal:2',
@@ -55,5 +55,15 @@ class Property extends Model
     public function photos(): HasMany
     {
         return $this->hasMany(PropertyPhoto::class)->orderBy('sort_order');
+    }
+
+    public function viewings(): HasMany
+    {
+        return $this->hasMany(Viewing::class);
+    }
+
+    public function applications(): HasMany
+    {
+        return $this->hasMany(Application::class);
     }
 }
