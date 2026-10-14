@@ -38,4 +38,19 @@ class Branch extends Model
     {
         return $this->hasMany(StaffProfile::class);
     }
+
+    public function inquiries(): HasMany
+    {
+        return $this->hasMany(Inquiry::class);
+    }
+
+    public function supportTickets(): HasMany
+    {
+        return $this->hasMany(SupportTicket::class);
+    }
+
+    public function escalations(): HasMany
+    {
+        return $this->hasMany(Escalation::class);
+    }
 }
