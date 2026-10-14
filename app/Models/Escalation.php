@@ -19,14 +19,14 @@ class Escalation extends Model
         ];
     }
 
+    public function application(): BelongsTo
+    {
+        return $this->belongsTo(Application::class);
+    }
+
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);
-    }
-
-    public function raisedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'raised_by_user_id');
     }
 
     public function lease(): BelongsTo
@@ -39,9 +39,9 @@ class Escalation extends Model
         return $this->belongsTo(MaintenanceRequest::class);
     }
 
-    public function application(): BelongsTo
+    public function raisedBy(): BelongsTo
     {
-        return $this->belongsTo(Application::class);
+        return $this->belongsTo(User::class, 'raised_by_user_id');
     }
 
     public function resolvedBy(): BelongsTo

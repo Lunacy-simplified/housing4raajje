@@ -22,21 +22,6 @@ class MaintenanceRequest extends Model
         ];
     }
 
-    public function property(): BelongsTo
-    {
-        return $this->belongsTo(Property::class);
-    }
-
-    public function lease(): BelongsTo
-    {
-        return $this->belongsTo(Lease::class);
-    }
-
-    public function raisedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'raised_by_user_id');
-    }
-
     public function assignedTo(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_to_user_id');
@@ -45,5 +30,20 @@ class MaintenanceRequest extends Model
     public function escalations(): HasMany
     {
         return $this->hasMany(Escalation::class);
+    }
+
+    public function lease(): BelongsTo
+    {
+        return $this->belongsTo(Lease::class);
+    }
+
+    public function property(): BelongsTo
+    {
+        return $this->belongsTo(Property::class);
+    }
+
+    public function raisedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'raised_by_user_id');
     }
 }

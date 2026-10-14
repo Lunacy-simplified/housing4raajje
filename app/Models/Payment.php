@@ -38,13 +38,13 @@ class Payment extends Model
         return $this->belongsTo(PaymentMethod::class);
     }
 
-    public function recordedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'recorded_by_user_id');
-    }
-
     public function payout(): BelongsTo
     {
         return $this->belongsTo(Payout::class);
+    }
+
+    public function recordedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'recorded_by_user_id');
     }
 }

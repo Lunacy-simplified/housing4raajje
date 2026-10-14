@@ -37,6 +37,41 @@ class Lease extends Model
         return $this->belongsTo(Application::class);
     }
 
+    public function client(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'client_user_id');
+    }
+
+    public function executedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'executed_by_user_id');
+    }
+
+    public function maintenanceRequests(): HasMany
+    {
+        return $this->hasMany(MaintenanceRequest::class);
+    }
+
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'owner_user_id');
+    }
+
+    public function paymentMethod(): BelongsTo
+    {
+        return $this->belongsTo(PaymentMethod::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    public function property(): BelongsTo
+    {
+        return $this->belongsTo(Property::class);
+    }
+
     public function renewalOf(): BelongsTo
     {
         return $this->belongsTo(Lease::class, 'renewal_of_lease_id');
@@ -47,43 +82,8 @@ class Lease extends Model
         return $this->hasMany(Lease::class, 'renewal_of_lease_id');
     }
 
-    public function property(): BelongsTo
-    {
-        return $this->belongsTo(Property::class);
-    }
-
-    public function client(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'client_user_id');
-    }
-
-    public function owner(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'owner_user_id');
-    }
-
-    public function executedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'executed_by_user_id');
-    }
-
-    public function paymentMethod(): BelongsTo
-    {
-        return $this->belongsTo(PaymentMethod::class);
-    }
-
     public function signatures(): HasMany
     {
         return $this->hasMany(LeaseSignature::class, 'lease_id');
-    }
-
-    public function payments(): HasMany
-    {
-        return $this->hasMany(Payment::class);
-    }
-
-    public function maintenanceRequests(): HasMany
-    {
-        return $this->hasMany(MaintenanceRequest::class);
     }
 }

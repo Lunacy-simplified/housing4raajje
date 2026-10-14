@@ -20,9 +20,9 @@ class SupportTicket extends Model
         ];
     }
 
-    public function inquiry(): BelongsTo
+    public function assignedTo(): BelongsTo
     {
-        return $this->belongsTo(Inquiry::class);
+        return $this->belongsTo(User::class, 'assigned_to_user_id');
     }
 
     public function branch(): BelongsTo
@@ -30,13 +30,13 @@ class SupportTicket extends Model
         return $this->belongsTo(Branch::class);
     }
 
+    public function inquiry(): BelongsTo
+    {
+        return $this->belongsTo(Inquiry::class);
+    }
+
     public function openedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'opened_by_user_id');
-    }
-
-    public function assignedTo(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'assigned_to_user_id');
     }
 }

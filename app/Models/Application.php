@@ -2,20 +2,20 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Refreshes;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Refreshes('reference')]
-#[Fillable(
+#[Fillable([
     'lease_term_id',
     'requested_start_date',
     'occupants',
     'employer',
     'income_bracket',
-)]
+])]
 
 class Application extends Model
 {
@@ -26,11 +26,6 @@ class Application extends Model
             'submitted_at' => 'datetime',
             'reviewed_at' => 'datetime',
         ];
-    }
-
-    public function property(): BelongsTo
-    {
-        return $this->belongsTo(Property::class);
     }
 
     public function client(): BelongsTo
@@ -46,6 +41,11 @@ class Application extends Model
     public function leaseTerm(): BelongsTo
     {
         return $this->belongsTo(LeaseTerm::class);
+    }
+
+    public function property(): BelongsTo
+    {
+        return $this->belongsTo(Property::class);
     }
 
     public function reviewedBy(): BelongsTo
