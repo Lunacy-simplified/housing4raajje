@@ -8,7 +8,7 @@ Run these commands from your local terminal:
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/housing4raajje.git
+git clone https://github.com/Lunacy-simplified/housing4raajje
 cd housing4raajje
 
 # Create your local environment configuration
