@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -13,9 +14,9 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id()->comment('Auto-incrementing primary key for the users table');
-            $table->foreignId('role_id')->comment('Role that decides what this user can access')->index()->constrained('roles');
+            $table->foreignId('role_id')->comment('Role that decides what this user can access')->index()->constrained('roles')->restrictOnDelete();
             $table->string('name', 255)->comment('Full name of the user');
-            $table->string('email', 255)->nullable()->unique()->comment('Login email address; optional, unique when present');
+            $table->string('email', 255)->nullable()->comment('Login email address; optional, unique when present');
             $table->timestampTz('email_verified_at')->nullable()->comment('When the user confirmed their email address; empty until verified');
             $table->string('phone', 20)->nullable()->unique()->comment('Contact number; attached to an owner\'s listings once verified');
             $table->timestampTz('phone_verified_at')->nullable()->comment('When the phone number was verified; empty until verified');
@@ -39,6 +40,8 @@ return new class extends Migration
             $table->longText('payload');
             $table->integer('last_activity')->index();
         });
+
+        DB::statement('CREATE UNIQUE INDEX users_email_lower_unique ON users (lower(email))');
     }
 
     /**

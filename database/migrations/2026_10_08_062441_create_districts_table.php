@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('districts', function (Blueprint $table) {
             $table->id()->comment('Auto-incrementing primary key for the districts table');
             $table->string('name', 80)->unique()->comment('Official name of the district');
-            $table->foreignId('branch_id')->index()->constrained('branches')->onDelete('restrict')->comment('Foreign key linking the district to its managing parent branch office');
+            $table->foreignId('branch_id')->comment('Foreign key linking the district to its managing parent branch office')->index()->constrained('branches')->onDelete('restrict');
             $table->boolean('is_active')->default(true)->comment('Status flag to determine if the district is active for housing routing operations');
             $table->timestamps();
         });
