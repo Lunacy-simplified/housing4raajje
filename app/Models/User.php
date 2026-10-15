@@ -53,6 +53,18 @@ class User extends Authenticatable
         return $this->hasOne(ClientProfile::class, 'user_id');
     }
 
+    public function dashboardRoute(): string
+    {
+        return match ($this->role?->code) {
+            'system_admin' => 'admin.dashboard',
+            'branch_manager' => 'manager.dashboard',
+            'property_specialist', 'receptionist' => 'staff.dashboard',
+            'owner' => 'owner.dashboard',
+            'client' => 'client.dashboard',
+            default => abort(403, 'Your account does not have a valid role.'),
+        };
+    }
+
     public function loggedViewings(): HasMany
     {
         return $this->hasMany(Viewing::class, 'logged_by_user_id');
