@@ -55,3 +55,33 @@ docker compose up -d --build
 # Run a fresh database migration and re-populate development seeders
 docker compose exec app php artisan migrate:fresh --seed
 ```
+
+---
+
+### Testing Environment Setup
+
+Before executing the test suite for the first time, initialize the localized PostgreSQL testing database:
+
+```bash
+docker compose exec db sh -c 'createdb -U "$POSTGRES_USER" h4r_testing'
+```
+
+Run the validation matrix using:
+
+```bash
+docker compose exec app php artisan test
+```
+---
+
+### Local Environment Mock Accounts
+
+When working in a local workspace environment (`APP_ENV=local`), the database provides 6 pre-configured user profiles covering all architectural permission access matrix layouts:
+
+| App Role                | Authentication Login Email | Testing Plaintext Password | Link Profile Extension          |
+| :---------------------- | :------------------------- | :------------------------- | :------------------------------ |
+| **System Admin**        | `admin@h4r.local`          | `SecretAdmin123!`          | `staff_profiles` (Global Scope) |
+| **Branch Manager**      | `manager@h4r.local`        | `SecretManager123!`        | `staff_profiles` (MLE Branch)   |
+| **Property Specialist** | `specialist@h4r.local`     | `SecretSpecialist123!`     | `staff_profiles` (MLE Branch)   |
+| **Receptionist**        | `reception@h4r.local`      | `SecretReception123!`      | `staff_profiles` (MLE Branch)   |
+| **Asset Owner**         | `owner@h4r.local`          | `SecretOwner123!`          | `owner_profiles`                |
+| **Rental Client**       | `client@h4r.local`         | `SecretClient123!`         | `client_profiles`               |

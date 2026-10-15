@@ -22,5 +22,11 @@ class DatabaseSeeder extends Seeder
             LeaseTermSeeder::class,
             PaymentMethodSeeder::class,
         ]);
+
+        if (app()->environment('local')) {
+            $this->call([
+                DemoUserSeeder::class,
+            ]);
+        }
     }
 }
