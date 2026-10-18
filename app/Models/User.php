@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -21,7 +22,7 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use HasFactory, Notifiable;
 
     protected function casts(): array
     {
@@ -51,6 +52,18 @@ class User extends Authenticatable
     public function clientProfile(): HasOne
     {
         return $this->hasOne(ClientProfile::class, 'user_id');
+    }
+
+    public function dashboardRoute(): string
+    {
+        return match ($this->role?->code) {
+            'system_admin' => 'admin.dashboard',
+            'branch_manager' => 'manager.dashboard',
+            'property_specialist', 'receptionist' => 'staff.dashboard',
+            'owner' => 'owner.dashboard',
+            'client' => 'client.dashboard',
+            default => abort(403, 'Your account does not have a valid role.'),
+        };
     }
 
     public function loggedViewings(): HasMany
