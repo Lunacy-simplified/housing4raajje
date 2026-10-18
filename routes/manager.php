@@ -6,6 +6,10 @@ Route::middleware(['auth', 'role:branch_manager'])
     ->prefix('manager')
     ->name('manager.')
     ->group(function () {
-        Route::get('/', fn() => 'Manager dashboard (placeholder)')
+        Route::view(
+            '/',
+            'dashboard-placeholder',
+            ['portal' => 'Branch Manager']
+        )
             ->name('dashboard');
     });

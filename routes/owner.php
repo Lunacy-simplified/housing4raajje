@@ -6,6 +6,10 @@ Route::middleware(['auth', 'role:owner'])
     ->prefix('owner')
     ->name('owner.')
     ->group(function () {
-        Route::get('/', fn() => 'Owner dashboard (placeholder)')
+        Route::view(
+            '/',
+            'dashboard-placeholder',
+            ['portal' => 'Owner']
+        )
             ->name('dashboard');
     });

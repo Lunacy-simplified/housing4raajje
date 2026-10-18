@@ -6,6 +6,10 @@ Route::middleware(['auth', 'role:system_admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        Route::get('/', fn () => 'Admin dashboard (placeholder)')
+        Route::view(
+            '/',
+            'dashboard-placeholder',
+            ['portal' => 'Admin']
+        )
             ->name('dashboard');
     });

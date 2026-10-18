@@ -6,6 +6,10 @@ Route::middleware(['auth', 'role:client'])
     ->prefix('client')
     ->name('client.')
     ->group(function () {
-        Route::get('/', fn () => 'Client dashboard (placeholder)')
+        Route::view(
+            '/',
+            'dashboard-placeholder',
+            ['portal' => 'Client']
+        )
             ->name('dashboard');
     });
