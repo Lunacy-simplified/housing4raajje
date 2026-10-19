@@ -3,7 +3,6 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
-use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -13,7 +12,6 @@ class LoginTest extends TestCase
     use RefreshDatabase;
 
     protected $seed = true;
-    protected $seeder = RoleSeeder::class;
 
     public static function roleDashboards()
     {

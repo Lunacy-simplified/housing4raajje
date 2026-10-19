@@ -3,7 +3,6 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
-use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -13,8 +12,6 @@ class RegisterTest extends TestCase
     use RefreshDatabase;
 
     protected $seed = true;
-
-    protected $seeder = RoleSeeder::class;
 
     /**
      * Return a valid registration form.
