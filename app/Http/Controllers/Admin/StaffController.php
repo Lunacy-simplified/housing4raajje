@@ -21,12 +21,50 @@ class StaffController extends Controller
         'receptionist',
     ];
 
+    private function staffRoles()
+    {
+        return Role::whereIn('code', self::STAFF_ROLES)
+            ->orderBy('code')
+            ->get();
+    }
+
+    public function index(Request $request)
+    {
+        $filters = $request->validate([
+            'role' => ['nullable', Rule::in(self::STAFF_ROLES)],
+            'branch_id' => ['nullable', 'integer'],
+            'status' => ['nullable', Rule::in(['active', 'inactive'])],
+        ]);
+
+        $staff = User::whereHas('staffProfile')
+            ->with(['role', 'staffProfile.branch'])
+            ->when($filters['role'] ?? null, function ($query, $role) {
+                $query->whereHas('role', fn($q) => $q->where('code', $role));
+            })
+
+            ->when($filters['branch_id'] ?? null, function ($query, $branchId) {
+                $query->whereHas('staffProfile', fn($q) => $q->where('branch_id', $branchId));
+            })
+
+            ->when($filters['status'] ?? null, function ($query, $status) {
+                $query->where('is_active', $status === 'active');
+            })
+
+            ->orderBy('name')
+            ->paginate(20)
+            ->withQueryString();
+
+        return view('admin.staff.index', [
+            'staff' => $staff,
+            'roles' => $this->staffRoles(),
+            'branches' => Branch::orderBy('branch_no')->get(),
+        ]);
+    }
+
     public function create()
     {
         return view('admin.staff.create', [
-            'roles' => Role::whereIn('code', self::STAFF_ROLES)
-                ->orderBy('code')
-                ->get(),
+            'roles' => $this->staffRoles(),
 
             'branches' => Branch::where('is_active', true)
                 ->orderBy('branch_no')
@@ -124,7 +162,7 @@ class StaffController extends Controller
         });
 
         return redirect()
-            ->route('admin.staff.create')
+            ->route('admin.staff.index')
             ->with(
                 'status',
                 "Staff account {$user->staffProfile->staff_code} created for {$user->name}."

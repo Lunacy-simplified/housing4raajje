@@ -14,6 +14,9 @@ Route::middleware(['auth', 'role:system_admin'])
         )
             ->name('dashboard');
 
+        Route::get('/staff', [StaffController::class, 'index'])
+            ->name('staff.index');
+
         Route::get('/staff/create', [StaffController::class, 'create'])
             ->name('staff.create');
 
