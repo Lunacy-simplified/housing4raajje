@@ -9,6 +9,12 @@ services:
             db:
                 condition: service_healthy
 
+    mailpit:
+        image: axllent/mailpit
+        ports:
+          - "8025:8025"
+          - "1025:1025"
+
     db:
         image: postgres:18-alpine
         environment:
