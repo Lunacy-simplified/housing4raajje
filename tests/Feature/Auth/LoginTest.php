@@ -3,7 +3,6 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
-use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -13,7 +12,6 @@ class LoginTest extends TestCase
     use RefreshDatabase;
 
     protected $seed = true;
-    protected $seeder = RoleSeeder::class;
 
     public static function roleDashboards()
     {
@@ -151,5 +149,22 @@ class LoginTest extends TestCase
         $response = $this->actingAs($owner)->get('/login');
 
         $response->assertRedirect(route('owner.dashboard'));
+    }
+
+    public function test_successful_login_records_last_login_timestamp()
+    {
+        $user = User::factory()
+            ->role('client')
+            ->create([
+                'is_active' => true,
+                'last_login_at' => null,
+            ]);
+
+        $this->post(route('login'), [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertNotNull($user->fresh()->last_login_at);
     }
 }

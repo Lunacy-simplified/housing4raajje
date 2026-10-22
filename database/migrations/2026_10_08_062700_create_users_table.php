@@ -22,6 +22,7 @@ return new class extends Migration
             $table->timestampTz('phone_verified_at')->nullable()->comment('When the phone number was verified; empty until verified');
             $table->string('password', 255)->comment('Hashed password');
             $table->boolean('is_active')->default(true)->comment('False deactivates the account without deleting its history');
+            $table->timestampTz('last_login_at')->nullable()->comment('When the user last signed in; empty if never');
             $table->rememberToken()->comment('Laravel “remember me” login token');
             $table->timestamps();
         });

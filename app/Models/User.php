@@ -31,8 +31,13 @@ class User extends Authenticatable
             'phone_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'last_login_at' => 'datetime',
         ];
     }
+
+    protected $attributes = [
+        'is_active' => true,
+    ];
 
     public function applications(): HasMany
     {
