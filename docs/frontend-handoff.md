@@ -1,7 +1,7 @@
 # Frontend handoff: authentication and staff management
 
 Backend by Looth: login, registration, admin staff management (Sprint 2).
-Last updated: 22 October 2026.
+Last updated: 22 October 2026 (added Last login).
 
 ## What this is
 
@@ -173,6 +173,7 @@ Staff can't register. Their accounts are created by the admin (section 5).
   | Branch | `$member->staffProfile->branch?->name ?? '—'` (administrators have no branch) |
   | Job title | `$member->staffProfile->job_title` |
   | Status | `$member->is_active` (true means Active) |
+  | Last login | `$member->last_login_at?->diffForHumans() ?? 'Never'` (for example "3 hours ago"); updated on every sign-in through the login form |
 
 - `$roles`: the four staff roles, for the filter (`->code`, `->name`).
 - `$branches`: **all** branches, for the filter (`->id`, `->name`).

@@ -65,6 +65,7 @@
                 <th>Branch</th>
                 <th>Job title</th>
                 <th>Status</th>
+                <th>Last Login</th>
             </tr>
         </thead>
         <tbody>
