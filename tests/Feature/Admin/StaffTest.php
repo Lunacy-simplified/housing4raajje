@@ -379,4 +379,98 @@ class StaffTest extends TestCase
             ->get('/admin/staff')
             ->assertForbidden();
     }
+
+    public function test_admin_can_deactivate_a_staff_member(): void
+    {
+        $staff = $this->makeStaff('receptionist', 'Aisha Receptionist');
+
+        $this->actingAs($this->admin)
+            ->from('/admin/staff')
+            ->patch("/admin/staff/{$staff->id}/status", [
+                'is_active' => '0',
+            ])
+            ->assertRedirect('/admin/staff')
+            ->assertSessionHas('status');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $staff->id,
+            'is_active' => false,
+        ]);
+    }
+
+    public function test_admin_can_activate_an_inactive_staff_member(): void
+    {
+        $staff = $this->makeStaff(
+            'receptionist',
+            'Aisha Receptionist',
+            'MLE',
+            false,
+        );
+
+        $this->actingAs($this->admin)
+            ->from('/admin/staff')
+            ->patch("/admin/staff/{$staff->id}/status", [
+                'is_active' => '1',
+            ])
+            ->assertRedirect('/admin/staff')
+            ->assertSessionHas('status');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $staff->id,
+            'is_active' => true,
+        ]);
+    }
+
+    public function test_invalid_status_value_is_rejected(): void
+    {
+        $staff = $this->makeStaff('receptionist', 'Aisha Receptionist');
+
+        $this->actingAs($this->admin)
+            ->from('/admin/staff')
+            ->patch("/admin/staff/{$staff->id}/status", [
+                'is_active' => 'invalid',
+            ])
+            ->assertRedirect('/admin/staff')
+            ->assertSessionHasErrors('is_active');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $staff->id,
+            'is_active' => true,
+        ]);
+    }
+
+    public function test_status_cannot_be_changed_for_a_client(): void
+    {
+        $client = User::factory()->role('client')->create();
+
+        $this->actingAs($this->admin)
+            ->patch("/admin/staff/{$client->id}/status", [
+                'is_active' => '0',
+            ])
+            ->assertNotFound();
+
+        $this->assertDatabaseHas('users', [
+            'id' => $client->id,
+            'is_active' => true,
+        ]);
+    }
+
+    public function test_admin_cannot_deactivate_their_own_account(): void
+    {
+        $this->admin->staffProfile()->create([
+            'staff_code' => 'H4R-STF-0999',
+            'branch_id' => null,
+        ]);
+
+        $this->actingAs($this->admin)
+            ->patch(route('admin.staff.status', $this->admin), [
+                'is_active' => '0',
+            ])
+            ->assertSessionHasErrors('is_active');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $this->admin->id,
+            'is_active' => true,
+        ]);
+    }
 }

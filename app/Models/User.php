@@ -34,6 +34,10 @@ class User extends Authenticatable
         ];
     }
 
+    protected $attributes = [
+        'is_active' => true,
+    ];
+
     public function applications(): HasMany
     {
         return $this->hasMany(Application::class, 'client_user_id');

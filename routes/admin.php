@@ -22,4 +22,13 @@ Route::middleware(['auth', 'role:system_admin'])
 
         Route::post('/staff', [StaffController::class, 'store'])
             ->name('staff.store');
+
+        Route::get('/staff/{user}/edit', [StaffController::class, 'edit'])
+            ->name('staff.edit');
+
+        Route::put('/staff/{user}', [StaffController::class, 'update'])
+            ->name('staff.update');
+
+        Route::patch('/staff/{user}/status', [StaffController::class, 'updateStatus'])
+            ->name('staff.status');
     });

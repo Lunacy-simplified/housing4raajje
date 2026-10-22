@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\ValidationException;
 
 class StaffController extends Controller
 {
@@ -26,6 +27,38 @@ class StaffController extends Controller
         return Role::whereIn('code', self::STAFF_ROLES)
             ->orderBy('code')
             ->get();
+    }
+
+    private function staffRules(?User $user = null): array
+    {
+        return [
+            'name' => ['required', 'string', 'max:255'],
+
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->ignore($user?->id),
+            ],
+
+            'phone' => [
+                'required',
+                'regex:/^[79]\d{6}$/',
+                Rule::unique('users', 'phone')->ignore($user?->id),
+            ],
+
+            'role' => ['required', Rule::in(self::STAFF_ROLES)],
+
+            'branch_id' => [
+                'nullable',
+                'required_unless:role,system_admin',
+                'prohibited_if:role,system_admin',
+                Rule::exists('branches', 'id')->where('is_active', true),
+            ],
+
+            'job_title' => ['nullable', 'string', 'max:80'],
+            'hired_on' => ['nullable', 'date', 'before_or_equal:today'],
+        ];
     }
 
     public function index(Request $request)
@@ -79,53 +112,15 @@ class StaffController extends Controller
             'email' => strtolower(trim((string) $request->input('email', ''))),
         ]);
 
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
+        $rules = $this->staffRules();
 
-            'email' => [
-                'required',
-                'email',
-                'max:255',
-                'unique:users,email',
-            ],
+        $rules['password'] = [
+            'required',
+            'confirmed',
+            Password::defaults(),
+        ];
 
-            'phone' => [
-                'required',
-                'regex:/^[79]\d{6}$/',
-                'unique:users,phone',
-            ],
-
-            'password' => [
-                'required',
-                'confirmed',
-                Password::defaults(),
-            ],
-
-            'role' => [
-                'required',
-                Rule::in(self::STAFF_ROLES),
-            ],
-
-            'branch_id' => [
-                'nullable',
-                'required_unless:role,system_admin',
-                'prohibited_if:role,system_admin',
-                Rule::exists('branches', 'id')
-                    ->where('is_active', true),
-            ],
-
-            'job_title' => [
-                'nullable',
-                'string',
-                'max:80',
-            ],
-
-            'hired_on' => [
-                'nullable',
-                'date',
-                'before_or_equal:today',
-            ],
-        ], [
+        $validated = $request->validate($rules, [
             'phone.regex' => 'Enter a Maldivian mobile number: 7 digits starting with 7 or 9.',
             'branch_id.required_unless' => 'Select a branch for this staff member.',
             'branch_id.prohibited_if' => 'System administrators must not be assigned to a branch.',
@@ -167,5 +162,95 @@ class StaffController extends Controller
                 'status',
                 "Staff account {$user->staffProfile->staff_code} created for {$user->name}."
             );
+    }
+
+    public function update(Request $request, User $user)
+    {
+        abort_unless($user->staffProfile, 404);
+
+        $request->merge([
+            'email' => strtolower(trim((string) $request->input('email', ''))),
+        ]);
+
+        $validated = $request->validate($this->staffRules($user), [
+            'phone.regex' => 'Enter a Maldivian mobile number: 7 digits starting with 7 or 9.',
+            'branch_id.required_unless' => 'Select a branch for this staff member.',
+            'branch_id.prohibited_if' => 'System administrators must not be assigned to a branch.',
+            'branch_id.exists' => 'Select an active branch.',
+        ]);
+
+        if (
+            $user->is($request->user())
+            && $validated['role'] !== $user->role->code
+        ) {
+            throw ValidationException::withMessages([
+                'role' => 'You cannot change your own role.',
+            ]);
+        }
+
+        DB::transaction(function () use ($user, $validated) {
+            $role = Role::where('code', $validated['role'])->firstOrFail();
+
+            $user->update([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'phone' => $validated['phone'],
+            ]);
+
+            $user->role_id = $role->id;
+            $user->save();
+
+            $user->staffProfile->update([
+                'branch_id' => $validated['branch_id'] ?? null,
+                'job_title' => $validated['job_title'] ?? null,
+                'hired_on' => $validated['hired_on'] ?? null,
+            ]);
+        });
+
+        return redirect()->route('admin.staff.index')
+            ->with('status', "Staff account {$user->staffProfile->staff_code} updated.");
+    }
+
+
+    public function updateStatus(Request $request, User $user)
+    {
+        abort_unless($user->staffProfile, 404);
+
+        $validated = $request->validate([
+            'is_active' => ['required', 'boolean'],
+        ]);
+
+        if (
+            $user->is($request->user())
+            && ! $request->boolean('is_active')
+        ) {
+            throw ValidationException::withMessages([
+                'is_active' => 'You cannot deactivate your own administrative account.',
+            ]);
+        }
+
+        $user->is_active = $request->boolean('is_active');
+        $user->save();
+
+        $status = $user->is_active ? 'activated' : 'deactivated';
+
+        return redirect()->back()->with(
+            'status',
+            "Staff account {$user->staffProfile->staff_code} {$status} successfully."
+        );
+    }
+
+
+    public function edit(User $user)
+    {
+        abort_unless($user->staffProfile, 404);
+
+        return view('admin.staff.edit', [
+            'user' => $user->load(['role', 'staffProfile.branch']),
+            'roles' => $this->staffRoles(),
+            'branches' => Branch::where('is_active', true)
+                ->orderBy('branch_no')
+                ->get(),
+        ]);
     }
 }
