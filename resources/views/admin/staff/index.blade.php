@@ -78,6 +78,7 @@
                     <td>{{ $member->staffProfile->branch?->name ?? '—' }}</td>
                     <td>{{ $member->staffProfile->job_title }}</td>
                     <td>{{ $member->is_active ? 'Active' : 'Inactive' }}</td>
+                    <td>{{ $member->last_login_at?->diffForHumans() ?? 'Never' }}</td>
                 </tr>
             @endforeach
         </tbody>

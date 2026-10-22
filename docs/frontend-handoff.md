@@ -257,7 +257,6 @@ Don't build pages for these yet:
 
 - **Forgot / reset password, email verification, phone verification (SMS) and MFA:** Looth, Sprint 3.
   Their pages and field names will be added to this document when they're ready.
-- **"Last login" on the staff list:** needs a database change first.
 - **A branch manager's view of their own branch's staff:** a separate manager-portal feature, not part of this work.
 
 ## Checklist before opening a pull request for a page

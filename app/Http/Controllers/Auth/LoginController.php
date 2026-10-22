@@ -39,6 +39,11 @@ class LoginController extends Controller
         // Protect against session fixation after login.
         $request->session()->regenerate();
 
+        // record the successful login timestamp.
+        $request->user()
+            ->forceFill(['last_login_at' => now()])
+            ->save();
+
         return redirect()->intended(
             route($request->user()->dashboardRoute())
         );
@@ -50,7 +55,7 @@ class LoginController extends Controller
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        
+
         return redirect()->route('login');
     }
 }

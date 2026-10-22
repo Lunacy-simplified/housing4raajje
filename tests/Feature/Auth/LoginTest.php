@@ -150,4 +150,21 @@ class LoginTest extends TestCase
 
         $response->assertRedirect(route('owner.dashboard'));
     }
+
+    public function test_successful_login_records_last_login_timestamp()
+    {
+        $user = User::factory()
+            ->role('client')
+            ->create([
+                'is_active' => true,
+                'last_login_at' => null,
+            ]);
+
+        $this->post(route('login'), [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertNotNull($user->fresh()->last_login_at);
+    }
 }
