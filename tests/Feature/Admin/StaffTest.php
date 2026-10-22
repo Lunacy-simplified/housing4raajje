@@ -473,4 +473,226 @@ class StaffTest extends TestCase
             'is_active' => true,
         ]);
     }
+
+    public function test_edit_page_loads_and_shows_current_staff_name(): void
+    {
+        $staff = $this->makeStaff('property_specialist', 'Current Staff Name');
+
+        $this->actingAs($this->admin)
+            ->get(route('admin.staff.edit', $staff))
+            ->assertOk()
+            ->assertSee('value="Current Staff Name"', false);
+    }
+
+    public function test_edit_page_returns_404_for_a_client(): void
+    {
+        $client = User::factory()->role('client')->create([
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($this->admin)
+            ->get(route('admin.staff.edit', $client))
+            ->assertNotFound();
+    }
+
+    public function test_admin_can_update_staff_details_and_is_redirected_to_list(): void
+    {
+        $staff = $this->makeStaff('property_specialist', 'Old Staff Name', 'MLE');
+
+        $newBranchId = Branch::where('code', 'HLM')->value('id');
+
+        $this->actingAs($this->admin)
+            ->put(route('admin.staff.update', $staff), [
+                'name' => 'Updated Staff Name',
+                'email' => $staff->email,
+                'phone' => '7771234',
+                'role' => 'property_specialist',
+                'branch_id' => $newBranchId,
+                'job_title' => 'Senior Property Specialist',
+                'hired_on' => '2026-01-15',
+            ])
+            ->assertRedirect(route('admin.staff.index'))
+            ->assertSessionHas('status');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $staff->id,
+            'name' => 'Updated Staff Name',
+            'phone' => '7771234',
+        ]);
+
+        $this->assertDatabaseHas('staff_profiles', [
+            'user_id' => $staff->id,
+            'branch_id' => $newBranchId,
+            'job_title' => 'Senior Property Specialist',
+            'hired_on' => '2026-01-15',
+        ]);
+    }
+
+
+    public function test_updating_with_unchanged_email_and_phone_succeeds(): void
+    {
+        $staff = $this->makeStaff('property_specialist', 'Unchanged Details Staff');
+        $staff->phone = '7771234';
+        $staff->save();
+
+        $this->actingAs($this->admin)
+            ->put(route('admin.staff.update', $staff), [
+                'name' => 'Updated Name',
+                'email' => $staff->email,
+                'phone' => $staff->phone,
+                'role' => 'property_specialist',
+                'branch_id' => $staff->staffProfile->branch_id,
+                'job_title' => 'Property Specialist',
+                'hired_on' => null,
+            ])
+            ->assertRedirect(route('admin.staff.index'))
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('users', [
+            'id' => $staff->id,
+            'email' => $staff->email,
+            'phone' => '7771234',
+            'name' => 'Updated Name',
+        ]);
+    }
+
+
+    public function test_email_belonging_to_another_user_is_rejected(): void
+    {
+        $staff = $this->makeStaff('property_specialist', 'Staff Being Edited');
+
+        $otherUser = User::factory()->role('client')->create([
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($this->admin)
+            ->put(route('admin.staff.update', $staff), [
+                'name' => $staff->name,
+                'email' => $otherUser->email,
+                'phone' => '7771234',
+                'role' => 'property_specialist',
+                'branch_id' => $staff->staffProfile->branch_id,
+                'job_title' => $staff->staffProfile->job_title,
+                'hired_on' => null,
+            ])
+            ->assertSessionHasErrors('email');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $staff->id,
+            'email' => $staff->email,
+        ]);
+    }
+
+    public function test_promoting_specialist_to_admin_clears_the_branch(): void
+    {
+        $staff = $this->makeStaff('property_specialist', 'Future Admin', 'MLE');
+
+        $this->actingAs($this->admin)
+            ->put(route('admin.staff.update', $staff), [
+                'name' => $staff->name,
+                'email' => $staff->email,
+                'phone' => '7771234',
+                'role' => 'system_admin',
+                'branch_id' => null,
+                'job_title' => 'System Administrator',
+                'hired_on' => null,
+            ])
+            ->assertRedirect(route('admin.staff.index'))
+            ->assertSessionHasNoErrors();
+
+        $staff->refresh();
+        $staff->load('role', 'staffProfile');
+
+        $this->assertSame('system_admin', $staff->role->code);
+
+        $this->assertDatabaseHas('staff_profiles', [
+            'user_id' => $staff->id,
+            'branch_id' => null,
+        ]);
+    }
+
+    public function test_admin_cannot_change_their_own_role(): void
+    {
+        // The controller checks for a staff profile before checking the role change.
+        $this->admin->staffProfile()->create([
+            'staff_code' => 'H4R-STF-0998',
+            'branch_id' => null,
+        ]);
+
+        $branchId = Branch::where('code', 'MLE')->value('id');
+
+        $this->actingAs($this->admin)
+            ->put(route('admin.staff.update', $this->admin), [
+                'name' => $this->admin->name,
+                'email' => $this->admin->email,
+                'phone' => '7771234',
+                'role' => 'branch_manager',
+                'branch_id' => $branchId,
+                'job_title' => 'Branch Manager',
+                'hired_on' => null,
+            ])
+            ->assertSessionHasErrors('role');
+
+        $this->assertDatabaseHas('users', [
+            'id' => $this->admin->id,
+            'role_id' => $this->admin->role_id,
+        ]);
+    }
+
+    public function test_submitted_staff_code_does_not_change_the_existing_code(): void
+    {
+        $staff = $this->makeStaff('property_specialist', 'Staff Code Test');
+
+        $originalStaffCode = $staff->staffProfile->staff_code;
+
+        $this->actingAs($this->admin)
+            ->put(route('admin.staff.update', $staff), [
+                'name' => 'Updated Staff Code Test',
+                'email' => $staff->email,
+                'phone' => '7771234',
+                'role' => 'property_specialist',
+                'branch_id' => $staff->staffProfile->branch_id,
+                'job_title' => 'Property Specialist',
+                'hired_on' => null,
+                'staff_code' => 'H4R-STF-9999',
+            ])
+            ->assertRedirect(route('admin.staff.index'))
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('staff_profiles', [
+            'user_id' => $staff->id,
+            'staff_code' => $originalStaffCode,
+        ]);
+
+        $this->assertDatabaseMissing('staff_profiles', [
+            'user_id' => $staff->id,
+            'staff_code' => 'H4R-STF-9999',
+        ]);
+    }
+
+    public function test_branch_manager_gets_forbidden_when_updating_staff(): void
+    {
+        $staff = $this->makeStaff('property_specialist', 'Target Staff');
+
+        $branchManager = User::factory()->role('branch_manager')->create([
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($branchManager)
+            ->put(route('admin.staff.update', $staff), [
+                'name' => 'Attempted Change',
+                'email' => $staff->email,
+                'phone' => '7771234',
+                'role' => 'property_specialist',
+                'branch_id' => $staff->staffProfile->branch_id,
+                'job_title' => 'Property Specialist',
+                'hired_on' => null,
+            ])
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('users', [
+            'id' => $staff->id,
+            'name' => 'Target Staff',
+        ]);
+    }
 }
