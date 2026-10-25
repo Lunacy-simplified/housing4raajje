@@ -190,12 +190,17 @@ class StaffController extends Controller
 
         DB::transaction(function () use ($user, $validated) {
             $role = Role::where('code', $validated['role'])->firstOrFail();
+            $emailChanged = $user->email !== $validated['email'];
 
             $user->update([
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'phone' => $validated['phone'],
             ]);
+
+            if ($emailChanged) {
+                $user->email_verified_at = null;
+            }
 
             $user->role_id = $role->id;
             $user->save();
