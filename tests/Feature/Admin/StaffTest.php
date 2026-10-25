@@ -695,4 +695,71 @@ class StaffTest extends TestCase
             'name' => 'Target Staff',
         ]);
     }
+
+
+    public function test_changing_staff_email_resets_verification(): void
+    {
+        $staff = $this->makeStaff('property_specialist', 'Verification Test Staff');
+
+        // Make sure this test starts with a verified email.
+        $staff->forceFill(['email_verified_at' => now()])->save();
+
+        $newBranchId = $staff->staffProfile->branch_id;
+
+        $this->actingAs($this->admin)
+            ->put(route('admin.staff.update', $staff), [
+                'name' => $staff->name,
+                'email' => 'changed.staff@example.com',
+                'phone' => '7771234',
+                'role' => 'property_specialist',
+                'branch_id' => $newBranchId,
+                'job_title' => 'Property Specialist',
+                'hired_on' => null,
+            ])
+            ->assertRedirect(route('admin.staff.index'))
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('users', [
+            'id' => $staff->id,
+            'email' => 'changed.staff@example.com',
+            'email_verified_at' => null,
+        ]);
+
+        $this->assertNull($staff->fresh()->email_verified_at);
+    }
+
+    public function test_saving_same_staff_email_keeps_verification(): void
+    {
+        $staff = $this->makeStaff('property_specialist', 'Verified Staff');
+
+        $staff->forceFill(['email_verified_at' => now()])->save();
+
+        $originalEmail = $staff->email;
+        $originalVerifiedAt = $staff->email_verified_at;
+        $newBranchId = $staff->staffProfile->branch_id;
+
+        $this->actingAs($this->admin)
+            ->put(route('admin.staff.update', $staff), [
+                'name' => 'Updated Verified Staff',
+                'email' => $originalEmail,
+                'phone' => '7771234',
+                'role' => 'property_specialist',
+                'branch_id' => $newBranchId,
+                'job_title' => 'Property Specialist',
+                'hired_on' => null,
+            ])
+            ->assertRedirect(route('admin.staff.index'))
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('users', [
+            'id' => $staff->id,
+            'email' => $originalEmail,
+        ]);
+
+        $this->assertNotNull($staff->fresh()->email_verified_at);
+        $this->assertEquals(
+            $originalVerifiedAt->toDateTimeString(),
+            $staff->fresh()->email_verified_at->toDateTimeString()
+        );
+    }
 }

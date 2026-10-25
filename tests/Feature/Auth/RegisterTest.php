@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Support\Facades\Notification;
 
 class RegisterTest extends TestCase
 {
@@ -235,5 +237,46 @@ class RegisterTest extends TestCase
         ]);
 
         $this->assertDatabaseCount('owner_profiles', 0);
+    }
+
+    public function test_client_registration_sends_verification_notification()
+    {
+        Notification::fake();
+
+        $response = $this->post(
+            '/register/client',
+            $this->validForm()
+        );
+
+        $response->assertRedirect(route('client.dashboard'));
+        $response->assertSessionHasNoErrors();
+
+        $user = User::where('email', 'aisha@example.com')->firstOrFail();
+
+        $this->assertAuthenticatedAs($user);
+        $this->assertNull($user->email_verified_at);
+        $this->assertFalse($user->hasVerifiedEmail());
+
+        Notification::assertSentTo($user, VerifyEmail::class);
+    }
+
+    public function test_registration_succeeds_when_verification_event_fails()
+    {
+        Notification::shouldReceive('send')
+            ->once()
+            ->andThrow(new \RuntimeException('Mail server down'));
+
+        $response = $this->post('/register/client', $this->validForm());
+
+        $response->assertRedirect(route('client.dashboard'));
+        $response->assertSessionHasNoErrors();
+
+        $user = User::where('email', 'aisha@example.com')->firstOrFail();
+        $this->assertAuthenticatedAs($user);
+        $this->assertNull($user->email_verified_at);
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'email' => 'aisha@example.com',
+        ]);
     }
 }

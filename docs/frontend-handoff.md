@@ -1,7 +1,7 @@
 # Frontend handoff: authentication and staff management
 
 Backend by Looth: login, registration, admin staff management (Sprint 2).
-Last updated: 22 October 2026 (added Last login).
+Last updated: 25 October 2026 (added email verification).
 
 ## What this is
 
@@ -34,6 +34,10 @@ docker compose exec app php artisan migrate:fresh --seed   # WARNING: wipes your
 ```
 
 Run every `artisan` command inside Docker (`docker compose exec app ...`), not with Laragon's PHP.
+
+**Emails** (for example, verification links) don't go to real inboxes locally. They're caught by
+**Mailpit**, which starts with `docker compose up -d`. Open `http://localhost:8025` to read them.
+Copy the `MAIL_...` settings from `.env.example` into your `.env`.
 
 Demo accounts (local only, created by `DemoUserSeeder`):
 
@@ -250,13 +254,63 @@ This page only works for staff. Any other user id gives a 404. The page has **tw
 
 Password changes are not on this page; they come with password reset (see below).
 
+## 7. Email verification
+
+Owners and clients get a verification email when they register. Verification is **optional for
+using the app**, but some actions require it (see "Rule for feature routes" below).
+
+**Verification notice page**
+
+| | |
+|---|---|
+| View | `resources/views/auth/verify-email.blade.php` |
+| URL | `GET /email/verify`, route `verification.notice` (logged-in users only) |
+| Data received | none |
+
+- **Purpose:** unverified users are sent here when they try a restricted action.
+- **Contents:** explain that they need to click the link in their email, and include the resend form and the logout form.
+- **Messages:** show `session('status')`, for example "A new verification link has been sent to your email address."
+
+**Resend form:** use it anywhere you show verification, such as the notice page, a dashboard or a profile page.
+```blade
+<form method="POST" action="{{ route('verification.send') }}">
+    @csrf
+    <button type="submit">Resend verification email</button>
+</form>
+```
+- Limited to 6 requests per minute.
+- An already-verified user gets the message "Email already verified." and no email is sent.
+
+**Verified badge:** use `auth()->user()->hasVerifiedEmail()` (true or false). The placeholder dashboard
+shows "Email verified ✓" or "Not verified" plus the resend form. Keep something like that in the real dashboards.
+
+**The link in the email:** route `verification.verify`. It has no page of its own.
+- **On success:** it redirects to the user's dashboard with the status "Email verified."
+- **Logged out:** clicking it sends the user to sign in, then back to the link.
+- **Invalid links:** tampered, expired or someone else's links show a 403 page.
+
+**Rule for feature routes:** routes for **applying for a property** and **listing (registering) a
+property** must include the `verified` middleware, for example:
+```php
+Route::middleware(['auth', 'role:client', 'verified'])->group(function () {
+    // application routes
+});
+```
+Unverified users are then redirected to the verification notice page automatically. This comes
+from the auth spec (6.1): users are "blocked from key actions until my email is verified".
+
+**Email address changes:** if an admin changes a staff member's email, that person's verification is reset to "not verified".
+
+The email itself is Laravel's default "Verify Email Address" email. Restyling it is optional and can come later.
+
 ---
 
 ## Not built yet
 
 Don't build pages for these yet:
 
-- **Forgot / reset password, email verification, phone verification (SMS) and MFA:** Looth, Sprint 3.
+- **Forgot / reset password, phone verification (SMS) and MFA:** Looth, Sprint 3.
+  Once phone verification exists, listings show an owner's phone number **only if it's verified** (BR-08).
   Their pages and field names will be added to this document when they're ready.
 - **A branch manager's view of their own branch's staff:** a separate manager-portal feature, not part of this work.
 
