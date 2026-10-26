@@ -40,6 +40,18 @@ Route::middleware('guest')->group(function () {
     Route::post('/register/{type}', [RegisterController::class, 'store'])
         ->whereIn('type', ['client', 'owner'])
         ->middleware('throttle:10,1');
+
+    Route::get('/staff-invite/{token}', [
+        PasswordResetController::class,
+        'showInvite',
+    ])->name('staff-invite.show');
+
+    Route::post('/staff-invite', [
+        PasswordResetController::class,
+        'acceptInvite',
+    ])
+        ->middleware('throttle:6,1')
+        ->name('staff-invite.accept');
 });
 
 Route::middleware('auth')->group(function () {

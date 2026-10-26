@@ -79,17 +79,6 @@
                 max="{{ date('Y-m-d') }}">
         </div>
 
-        <div>
-            <label for="password">Temporary password</label>
-            <input id="password" name="password" type="password" required autocomplete="new-password">
-        </div>
-
-        <div>
-            <label for="password_confirmation">Confirm temporary password</label>
-            <input id="password_confirmation" name="password_confirmation" type="password" required
-                autocomplete="new-password">
-        </div>
-
         <button type="submit">Create Staff Account</button>
     </form>
 </body>

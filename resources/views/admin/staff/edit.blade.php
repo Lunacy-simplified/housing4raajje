@@ -1,5 +1,20 @@
 <h1>Edit Staff Member</h1>
 
+{{-- 1. ADDED HERE: Placed prominently at the top if the user hasn't verified their email --}}
+@if (!$user->hasVerifiedEmail())
+    <div
+        style="background-color: #fef3c7; padding: 10px; margin-bottom: 15px; border: 1px solid #d97706; border-radius: 4px;">
+        <p style="margin: 0 0 10px 0;"><strong>Invitation Pending:</strong> This staff member has not verified their
+            email yet.</p>
+        <form method="POST" action="{{ route('admin.staff.invite', $user) }}">
+            @csrf
+            <button type="submit">
+                Resend invite
+            </button>
+        </form>
+    </div>
+@endif
+
 @if (session('status'))
     <p>{{ session('status') }}</p>
 @endif
