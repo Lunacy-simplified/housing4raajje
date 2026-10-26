@@ -5,7 +5,9 @@ namespace Tests\Feature\Admin;
 use App\Models\Branch;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Hash;
+use App\Notifications\StaffInvitation;
 use Tests\TestCase;
 
 class StaffTest extends TestCase
@@ -35,8 +37,6 @@ class StaffTest extends TestCase
             'branch_id' => Branch::where('code', 'MLE')->value('id'),
             'job_title' => 'Lettings Specialist',
             'hired_on' => '2026-01-15',
-            'password' => 'Temp1234',
-            'password_confirmation' => 'Temp1234',
         ], $overrides);
     }
 
@@ -230,16 +230,26 @@ class StaffTest extends TestCase
         $this->assertDatabaseCount('users', 1);
     }
 
-    public function test_temporary_password_is_stored_as_a_hash()
+    public function test_staff_creation_uses_a_random_password_instead_of_a_submitted_password(): void
     {
-        $this->actingAs($this->admin)
-            ->post('/admin/staff', $this->validForm())
-            ->assertRedirect(route('admin.staff.index'));
+        Notification::fake();
+
+        $response = $this->actingAs($this->admin)
+            ->post(route('admin.staff.store'), $this->validForm([
+                'email' => 'hassan@h4r.local',
+            ]));
+
+        $response->assertRedirect(route('admin.staff.index'));
 
         $user = User::where('email', 'hassan@h4r.local')->firstOrFail();
 
-        $this->assertTrue(Hash::check('Temp1234', $user->password));
+        $this->assertFalse(Hash::check('Temp1234', $user->password));
         $this->assertNotSame('Temp1234', $user->password);
+
+        Notification::assertSentTo(
+            $user,
+            StaffInvitation::class
+        );
     }
 
     public function test_admin_can_view_the_staff_list()

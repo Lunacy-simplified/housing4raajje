@@ -43,8 +43,37 @@ class PasswordResetController extends Controller
         ]);
     }
 
+    public function showInvite(Request $request, string $token)
+    {
+        return view('auth.staff-invite', [
+            'token' => $token,
+            'email' => $request->query('email'),
+        ]);
+    }
+
     public function update(Request $request)
     {
+        return $this->resetWith(
+            $request,
+            'users',
+            'Your password has been reset. You can sign in now.'
+        );
+    }
+
+    public function acceptInvite(Request $request)
+    {
+        return $this->resetWith(
+            $request,
+            'staff_invites',
+            'Your staff account is ready. You can sign in now.'
+        );
+    }
+
+    private function resetWith(
+        Request $request,
+        string $brokerName,
+        string $successMessage
+    ) {
         $request->merge([
             'email' => strtolower(trim((string) $request->input('email', ''))),
         ]);
@@ -59,7 +88,7 @@ class PasswordResetController extends Controller
             ],
         ]);
 
-        $status = Password::reset(
+        $status = Password::broker($brokerName)->reset(
             $request->only(
                 'email',
                 'password',
@@ -89,16 +118,17 @@ class PasswordResetController extends Controller
         if ($status === Password::PASSWORD_RESET) {
             return redirect()
                 ->route('login')
-                ->with(
-                    'status',
-                    'Your password has been reset. You can sign in now.'
-                );
+                ->with('status', $successMessage);
         }
+
+        $errorMessage = $brokerName === 'staff_invites'
+            ? 'This invitation link is invalid or has expired.'
+            : 'This reset link is invalid or has expired.';
 
         return back()
             ->withInput($request->only('email'))
             ->withErrors([
-                'email' => 'This reset link is invalid or has expired.',
+                'email' => $errorMessage,
             ]);
     }
 }

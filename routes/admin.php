@@ -31,4 +31,10 @@ Route::middleware(['auth', 'role:system_admin'])
 
         Route::patch('/staff/{user}/status', [StaffController::class, 'updateStatus'])
             ->name('staff.status');
+
+        Route::post('/staff/{user}/invite', [
+            StaffController::class,
+            'resendInvite',
+        ])
+            ->name('staff.invite');
     });

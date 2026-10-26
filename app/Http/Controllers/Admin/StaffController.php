@@ -10,8 +10,10 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
+use App\Notifications\StaffInvitation;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 
 class StaffController extends Controller
 {
@@ -112,15 +114,7 @@ class StaffController extends Controller
             'email' => strtolower(trim((string) $request->input('email', ''))),
         ]);
 
-        $rules = $this->staffRules();
-
-        $rules['password'] = [
-            'required',
-            'confirmed',
-            Password::defaults(),
-        ];
-
-        $validated = $request->validate($rules, [
+        $validated = $request->validate($this->staffRules(), [
             'phone.regex' => 'Enter a Maldivian mobile number: 7 digits starting with 7 or 9.',
             'branch_id.required_unless' => 'Select a branch for this staff member.',
             'branch_id.prohibited_if' => 'System administrators must not be assigned to a branch.',
@@ -135,7 +129,7 @@ class StaffController extends Controller
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'phone' => $validated['phone'],
-                'password' => $validated['password'],
+                'password' => Str::password(32),
             ]);
 
             $user->role_id = $role->id;
@@ -156,11 +150,27 @@ class StaffController extends Controller
             return $user;
         });
 
+        // Send the invitation after the database transaction commits.
+        try {
+            $token = Password::broker('staff_invites')->createToken($user);
+
+            $user->notify(new StaffInvitation($token));
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            return redirect()
+                ->route('admin.staff.index')
+                ->with(
+                    'status',
+                    "Staff account {$user->staffProfile->staff_code} created, but the invite email couldn't be sent. Use Resend invite."
+                );
+        }
+
         return redirect()
             ->route('admin.staff.index')
             ->with(
                 'status',
-                "Staff account {$user->staffProfile->staff_code} created for {$user->name}."
+                "Staff account {$user->staffProfile->staff_code} created for {$user->name}. An invitation email has been sent."
             );
     }
 
@@ -257,5 +267,35 @@ class StaffController extends Controller
                 ->orderBy('branch_no')
                 ->get(),
         ]);
+    }
+
+    public function resendInvite(User $user)
+    {
+        abort_unless($user->staffProfile, 404);
+
+        if ($user->hasVerifiedEmail()) {
+            return back()->with(
+                'status',
+                'This staff member has already set up their account.'
+            );
+        }
+
+        try {
+            $token = Password::broker('staff_invites')->createToken($user);
+
+            $user->notify(new StaffInvitation($token));
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            return back()->with(
+                'status',
+                "The invitation email couldn't be sent. Please try again."
+            );
+        }
+
+        return back()->with(
+            'status',
+            "A new invitation has been sent to {$user->email}."
+        );
     }
 }

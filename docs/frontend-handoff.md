@@ -1,7 +1,7 @@
 # Frontend handoff: authentication and staff management
 
 Backend by Looth: login, registration, admin staff management (Sprint 2).
-Last updated: 26 October 2026 (added password reset).
+Last updated: 26 October 2026 (added staff invites).
 
 ## What this is
 
@@ -219,11 +219,11 @@ Keep the chosen option selected with `request('role')`, `request('branch_id')` a
 | `branch_id` | select | yes, **except administrators** | first option must be `<option value="">No branch</option>`; must be empty for System Administrator |
 | `job_title` | text | no | max 80 |
 | `hired_on` | date | no | can't be in the future |
-| `password` | password | yes | temporary password the admin gives to the new staff member |
-| `password_confirmation` | password | yes | |
 
 - **Staff code:** generated automatically (`H4R-STF-0001`, `0002`, ...). There's no field for it.
-- **On success:** redirected to the staff list with a status message that includes the new code.
+- **No password fields.** The new staff member gets an **invite email** and sets their own password (section 9).
+- **On success:** redirected to the staff list with "Staff account H4R-STF-.... created for <name>. An invitation email has been sent."
+- **If the invite email fails:** the account is still created, and the message ends with "Use Resend invite."
 
 ## 6. Edit staff (admin)
 
@@ -254,7 +254,14 @@ This page only works for staff. Any other user id gives a 404. The page has **tw
 - **Own account:** an admin can't deactivate themselves. The error appears on `is_active`.
 - **Effect:** a deactivated user is logged out on their next click and sees the "deactivated" message on the sign-in page.
 
-Password changes are not on this page; they come with password reset (see below).
+**c) Resend invite:** show this only while the invite is pending, `@if (! $user->hasVerifiedEmail())`.
+```blade
+<form method="POST" action="{{ route('admin.staff.invite', $user) }}">@csrf <button>Resend invite</button></form>
+```
+- **On success:** back to the same page with "A new invitation has been sent to <email>."
+- **If the account is already set up:** "This staff member has already set up their account." and no email is sent.
+
+Password changes are not on this page. Staff use "Forgot password?" on the sign-in page (section 8).
 
 ## 7. Email verification
 
@@ -355,13 +362,41 @@ The email itself is Laravel's default "Verify Email Address" email. Restyling it
 
 The email is Laravel's default "Reset Password Notification". Restyling it is optional.
 
+## 9. Accept staff invite
+
+New staff members open this page from their invite email and choose their password.
+
+| | |
+|---|---|
+| View | `resources/views/auth/staff-invite.blade.php` |
+| URL | `GET /staff-invite/{token}?email=...`, route `staff-invite.show` (logged-out users only) |
+| Form | `POST` to `route('staff-invite.accept')` |
+| Data received | `$token`, `$email` (from the link) |
+
+| Field `name` | Type | Notes |
+|---|---|---|
+| `token` | **hidden** | `value="{{ $token }}"`. Must be included |
+| `email` | email | `old('email', $email)` |
+| `password` | password | password rule (at least 8 characters, letters and numbers) |
+| `password_confirmation` | password | must be named exactly this |
+
+- **Errors:**
+  - A bad, used or expired link shows "This invitation link is invalid or has expired." on `email`.
+  - Password problems appear on `password`.
+- **On success:** redirected to the sign-in page with "Your staff account is ready. You can sign in now."
+- **Link rules:** each invite link is valid for **24 hours** and works **once**. Admins can send a new one (section 6c).
+- **After accepting:** the staff member's email counts as verified.
+- **Limit:** 6 attempts per minute.
+
+Design it like the reset password page, but with welcoming wording ("Set up your account").
+
 ---
 
 ## Not built yet
 
 Don't build pages for these yet:
 
-- **Phone verification (SMS), MFA and staff invite emails:** Looth, Sprint 3.
+- **Phone verification (SMS) and MFA:** Looth, Sprint 3.
   Once phone verification exists, listings show an owner's phone number **only if it's verified** (BR-08).
   Their pages and field names will be added to this document when they're ready.
 - **A branch manager's view of their own branch's staff:** a separate manager-portal feature, not part of this work.
