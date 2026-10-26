@@ -1,7 +1,7 @@
 # Frontend handoff: authentication and staff management
 
 Backend by Looth: login, registration, admin staff management (Sprint 2).
-Last updated: 25 October 2026 (added email verification).
+Last updated: 26 October 2026 (added password reset).
 
 ## What this is
 
@@ -111,7 +111,9 @@ None of this exists yet. It's a suggestion so that everyone's pages share one de
 - **Links to add:**
   - "Register as a client": `route('register', 'client')`
   - "Register as a property owner": `route('register', 'owner')`
-  - Leave out "Forgot password?" for now; it isn't built yet.
+  - "Forgot password?": `route('password.request')` (see section 8)
+- **Status messages:** show `session('status')` on this page. After a password reset, the user lands here
+  with "Your password has been reset. You can sign in now."
 
 ## 2. Register (client and owner)
 
@@ -303,13 +305,63 @@ from the auth spec (6.1): users are "blocked from key actions until my email is 
 
 The email itself is Laravel's default "Verify Email Address" email. Restyling it is optional and can come later.
 
+## 8. Password reset
+
+**Forgot password page**
+
+| | |
+|---|---|
+| View | `resources/views/auth/forgot-password.blade.php` |
+| URL | `GET /forgot-password`, route `password.request` (logged-out users only) |
+| Form | `POST` to `route('password.email')` |
+| Data received | none |
+
+| Field `name` | Type | Notes |
+|---|---|---|
+| `email` | email | refill with `old('email')` |
+
+- **Message:** after submitting, `session('status')` is **always** "If that email is registered, we've sent a reset link."
+  This is deliberate. The page must never reveal which emails have accounts, so don't add wording like "email not found".
+- **Errors:** only for an empty or invalid email address (on `email`).
+- **Limit:** 6 requests per minute.
+- **Link to add:** "Back to sign in", pointing to `route('login')`.
+
+**Reset password page** (opened from the link in the email)
+
+| | |
+|---|---|
+| View | `resources/views/auth/reset-password.blade.php` |
+| URL | `GET /reset-password/{token}?email=...`, route `password.reset` |
+| Form | `POST` to `route('password.update')` |
+| Data received | `$token`, `$email` (from the link) |
+
+| Field `name` | Type | Notes |
+|---|---|---|
+| `token` | **hidden** | `value="{{ $token }}"`. Must be included, or the reset always fails |
+| `email` | email | `old('email', $email)` |
+| `password` | password | password rule (at least 8 characters, letters and numbers) |
+| `password_confirmation` | password | must be named exactly this |
+
+- **Errors:**
+  - A bad, used or expired link shows "This reset link is invalid or has expired." on `email`.
+  - Password problems appear on `password`.
+- **On success:** redirected to the sign-in page with "Your password has been reset. You can sign in now."
+- **Link rules:** each link expires after **15 minutes** and works **once**.
+- **After a reset:**
+  - the user is signed out on all other devices
+  - "remember me" logins stop working
+  - their email counts as verified
+- **Limit:** 6 attempts per minute.
+
+The email is Laravel's default "Reset Password Notification". Restyling it is optional.
+
 ---
 
 ## Not built yet
 
 Don't build pages for these yet:
 
-- **Forgot / reset password, phone verification (SMS) and MFA:** Looth, Sprint 3.
+- **Phone verification (SMS), MFA and staff invite emails:** Looth, Sprint 3.
   Once phone verification exists, listings show an owner's phone number **only if it's verified** (BR-08).
   Their pages and field names will be added to this document when they're ready.
 - **A branch manager's view of their own branch's staff:** a separate manager-portal feature, not part of this work.

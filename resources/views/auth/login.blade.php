@@ -18,7 +18,11 @@
         <label>Password <input type="password" name="password" required></label>
         <label><input type="checkbox" name="remember"> Remember me</label>
         <button type="submit">Sign in</button>
+        @if (session('status'))
+            <p role="status">{{ session('status') }}</p>
+        @endif
     </form>
+    <p><a href="{{ route('password.request') }}">Forgot password?</a></p>
 </body>
 
 </html>
