@@ -25,6 +25,8 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
 
+    const MFA_ROLES = ['system_admin', 'branch_manager'];
+
     protected function casts(): array
     {
         return [
@@ -84,6 +86,11 @@ class User extends Authenticatable implements MustVerifyEmail
             ->withTimestamps();
     }
 
+    public function oneTimeCodes(): HasMany
+    {
+        return $this->hasMany(OneTimeCode::class);
+    }
+
     public function ownedProperties(): HasMany
     {
         return $this->hasMany(Property::class, 'owner_user_id');
@@ -114,6 +121,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsTo(Role::class);
     }
 
+    public function requiresMfa()
+    {
+        return in_array($this->role?->code, self::MFA_ROLES, true);
+    }
+
     public function scheduledViewings(): HasMany
     {
         return $this->hasMany(Viewing::class, 'scheduled_by_user_id');
@@ -122,6 +134,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function staffProfile(): HasOne
     {
         return $this->hasOne(StaffProfile::class, 'user_id');
+    }
+
+    public function trustedDevices(): HasMany
+    {
+        return $this->hasMany(TrustedDevice::class);
     }
 
     public function viewings(): HasMany
