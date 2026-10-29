@@ -111,6 +111,8 @@ class PasswordResetController extends Controller
                     ->where('user_id', $user->id)
                     ->delete();
 
+                $user->trustedDevices()->delete();
+
                 event(new PasswordReset($user));
             }
         );

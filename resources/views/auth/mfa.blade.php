@@ -28,7 +28,8 @@
                 <p role="alert" style="color:red">{{ $message }}</p>
             @enderror
         </div>
-
+        <label><input type="checkbox" name="trust_device" value="1"> Don't ask for a code on this device for 30
+            days</label>
         <button type="submit">Verify</button>
     </form>
 

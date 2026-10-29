@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\OtpService;
+use App\Services\TrustedDeviceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -20,7 +21,7 @@ class MfaController extends Controller
         return view('auth.mfa');
     }
 
-    public function verify(Request $request, OtpService $otp)
+    public function verify(Request $request, OtpService $otp, TrustedDeviceService $devices)
     {
         $request->validate(['code' => ['required', 'digits:6']]);
 
@@ -38,6 +39,9 @@ class MfaController extends Controller
         $request->session()->forget('mfa.user_id');
         Auth::login($user);
         $request->session()->regenerate();
+        if ($request->boolean('trust_device')) {
+            $devices->trust($request, $user);
+        }
         $user->forceFill(['last_login_at' => now()])->save();
 
         return redirect()->intended(route($user->dashboardRoute()));

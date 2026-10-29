@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Services\OtpService;
+use App\Services\TrustedDeviceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -34,7 +35,7 @@ class LoginController extends Controller
 
         $user = Auth::getLastAttempted();   // the user whose password just matched
 
-        if ($user->requiresMfa()) {
+        if ($user->requiresMfa() && ! app(TrustedDeviceService::class)->isTrusted($request, $user)) {
             try {
                 app(OtpService::class)->send($user, 'mfa_login');
             } catch (\Throwable $e) {
@@ -47,7 +48,8 @@ class LoginController extends Controller
             return redirect()->route('mfa.show');
         }
 
-        Auth::login($user, $request->boolean('remember'));
+        $remember = ! $user->requiresMfa() && $request->boolean('remember');
+        Auth::login($user, $remember);
 
         // Protect against session fixation after login.
         $request->session()->regenerate();
