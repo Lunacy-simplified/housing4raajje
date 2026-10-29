@@ -13,11 +13,11 @@ class LoginTest extends TestCase
 
     protected $seed = true;
 
+    // System admins and branch managers must enter an MFA code first,
+    // so they don't land on a dashboard straight away. See MfaTest.
     public static function roleDashboards()
     {
         return [
-            'system admin'        => ['system_admin', 'admin.dashboard'],
-            'branch manager'      => ['branch_manager', 'manager.dashboard'],
             'property specialist' => ['property_specialist', 'staff.dashboard'],
             'receptionist'        => ['receptionist', 'staff.dashboard'],
             'owner'               => ['owner', 'owner.dashboard'],
