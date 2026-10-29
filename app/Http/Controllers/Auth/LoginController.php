@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Services\OtpService;
+use App\Services\TrustedDeviceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -27,14 +29,27 @@ class LoginController extends Controller
         // Only active acc can log in.
         $credentials['is_active'] = true;
 
-        if (! Auth::attempt(
-            $credentials,
-            $request->boolean('remember')
-        )) {
-            throw ValidationException::withMessages([
-                'email' => 'These login details are incorrect.',
-            ]);
+        if (! Auth::validate($credentials)) {
+            throw ValidationException::withMessages(['email' => 'These login details are incorrect.']);
         }
+
+        $user = Auth::getLastAttempted();   // the user whose password just matched
+
+        if ($user->requiresMfa() && ! app(TrustedDeviceService::class)->isTrusted($request, $user)) {
+            try {
+                app(OtpService::class)->send($user, 'mfa_login');
+            } catch (\Throwable $e) {
+                report($e);
+                throw ValidationException::withMessages(['email' => "We couldn't send your sign-in code. Please try again."]);
+            }
+
+            $request->session()->put('mfa.user_id', $user->id);   // remember who is mid-login
+
+            return redirect()->route('mfa.show');
+        }
+
+        $remember = ! $user->requiresMfa() && $request->boolean('remember');
+        Auth::login($user, $remember);
 
         // Protect against session fixation after login.
         $request->session()->regenerate();

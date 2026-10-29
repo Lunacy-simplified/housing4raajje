@@ -1,7 +1,7 @@
 # Frontend handoff: authentication and staff management
 
 Backend by Looth: login, registration, admin staff management (Sprint 2).
-Last updated: 26 October 2026 (added staff invites).
+Last updated: 29 October 2026 (added MFA).
 
 ## What this is
 
@@ -35,6 +35,8 @@ docker compose exec app php artisan migrate:fresh --seed   # WARNING: wipes your
 
 Run every `artisan` command inside Docker (`docker compose exec app ...`), not with Laragon's PHP.
 
+The admin and manager accounts use **MFA**: after the password, a 6-digit code is emailed. Read it in Mailpit.
+
 **Emails** (for example, verification links) don't go to real inboxes locally. They're caught by
 **Mailpit**, which starts with `docker compose up -d`. Open `http://localhost:8025` to read them.
 Copy the `MAIL_...` settings from `.env.example` into your `.env`.
@@ -43,8 +45,8 @@ Demo accounts (local only, created by `DemoUserSeeder`):
 
 | Role | Email | Password | Lands on |
 |---|---|---|---|
-| System administrator | admin@h4r.local | SecretAdmin123! | `/admin` |
-| Branch manager | manager@h4r.local | SecretManager123! | `/manager` |
+| System administrator | admin@h4r.local | SecretAdmin123! | `/mfa`, then `/admin` |
+| Branch manager | manager@h4r.local | SecretManager123! | `/mfa`, then `/manager` |
 | Property specialist | specialist@h4r.local | SecretSpecialist123! | `/staff` |
 | Receptionist | reception@h4r.local | SecretReception123! | `/staff` |
 | Property owner | owner@h4r.local | SecretOwner123! | `/owner` |
@@ -107,7 +109,10 @@ None of this exists yet. It's a suggestion so that everyone's pages share one de
   and "This account has been deactivated. Contact your administrator." An empty password gives
   an error on `password`.
 - **Too many attempts:** after 5 failed attempts in one minute, Laravel shows a 429 page.
-- **On success:** the user is sent to their own dashboard (see section 3).
+- **On success:** the user is sent to their own dashboard (see section 3). System administrators and branch
+  managers are sent to the MFA code page first (section 10), unless they're on a trusted device.
+- **If the MFA code email can't be sent,** the error "We couldn't send your sign-in code. Please try again."
+  appears on `email`.
 - **Links to add:**
   - "Register as a client": `route('register', 'client')`
   - "Register as a property owner": `route('register', 'owner')`
@@ -390,13 +395,44 @@ New staff members open this page from their invite email and choose their passwo
 
 Design it like the reset password page, but with welcoming wording ("Set up your account").
 
+## 10. MFA code (system administrators and branch managers)
+
+After a correct password, admins and managers get a 6-digit code by email and must enter it here.
+They are **not** logged in until the code is correct.
+
+| | |
+|---|---|
+| View | `resources/views/auth/mfa.blade.php` |
+| URL | `GET /mfa`, route `mfa.show` (only during a sign-in; otherwise it redirects to sign in) |
+| Data received | none |
+
+**Code form:** `POST` to `route('mfa.verify')`
+
+| Field `name` | Type | Notes |
+|---|---|---|
+| `code` | text | 6 digits. Keep `inputmode="numeric"` and `autocomplete="one-time-code"` (phones can fill it in) |
+| `trust_device` | checkbox, `value="1"` | "Don't ask for a code on this device for 30 days" |
+
+- **Errors** appear on `code`, for example "The code is incorrect or has expired."
+- **On success:** redirected to their dashboard.
+- **If they ticked the box:** this browser skips the code for 30 days. The password is still always required.
+
+**Resend form:** `POST` to `route('mfa.resend')`, with `@csrf` and a "Send a new code" button.
+- On success, `session('status')` is "A new code has been sent to your email." The old code stops working.
+
+**Rules worth showing on the page:**
+- Each code expires after **10 minutes** and works once.
+- After 5 wrong attempts the code stops working, and the user must request a new one.
+- Limits: 5 attempts per minute on the code form, and 3 resends per minute.
+- "Remember me" on the sign-in page has no effect for admins and managers. The trusted-device checkbox replaces it.
+
 ---
 
 ## Not built yet
 
 Don't build pages for these yet:
 
-- **Phone verification (SMS) and MFA:** Looth, Sprint 3.
+- **Phone verification (SMS):** Looth, Sprint 3. Waiting for MsgOwl to approve the sender ID.
   Once phone verification exists, listings show an owner's phone number **only if it's verified** (BR-08).
   Their pages and field names will be added to this document when they're ready.
 - **A branch manager's view of their own branch's staff:** a separate manager-portal feature, not part of this work.

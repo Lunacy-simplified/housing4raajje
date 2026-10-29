@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Models\TrustedDevice;
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -349,6 +350,31 @@ class PasswordResetTest extends TestCase
         );
 
         $this->assertNotEmpty($user->remember_token);
+    }
+
+    public function test_password_reset_removes_trusted_devices(): void
+    {
+        $user = User::factory()->role('system_admin')->create([
+            'email' => 'admin@h4r.local',
+            'password' => 'OldPass123',
+        ]);
+
+        TrustedDevice::create([
+            'user_id' => $user->id,
+            'token_hash' => hash('sha256', 'known-token'),
+            'expires_at' => now()->addDays(30),
+        ]);
+
+        $token = Password::createToken($user);
+
+        $this->post('/reset-password', [
+            'token' => $token,
+            'email' => $user->email,
+            'password' => 'NewPass123',
+            'password_confirmation' => 'NewPass123',
+        ])->assertRedirect(route('login'));
+
+        $this->assertDatabaseMissing('trusted_devices', ['user_id' => $user->id]);
     }
 
     public function test_logged_in_users_cannot_access_forgot_password_page(): void
