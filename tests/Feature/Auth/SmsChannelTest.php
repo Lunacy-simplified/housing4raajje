@@ -16,13 +16,6 @@ class SmsChannelTest extends TestCase
 
     protected $seed = true;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        Http::preventStrayRequests();
-    }
-
     public function test_msgowl_request_has_correct_url_header_and_prefix()
     {
         config([
@@ -65,7 +58,30 @@ class SmsChannelTest extends TestCase
         $user = User::factory()->role('client')->create(['phone' => '7771234']);
 
         $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('SMS could not be sent.');
 
         app(OtpService::class)->send($user, 'phone_verification', 'sms');
+    }
+
+    public function test_user_without_a_phone_gets_no_sms_request()
+    {
+        config([
+            'services.sms.driver' => 'msgowl',
+            'services.msgowl.access_key' => 'test-key',
+            'services.msgowl.sender_id' => 'H4R',
+        ]);
+        Http::fake();
+
+        $user = User::factory()->role('client')->create(['phone' => null]);
+
+        // try/catch instead of expectException, so we can still check Http afterwards.
+        try {
+            app(OtpService::class)->send($user, 'phone_verification', 'sms');
+            $this->fail('Expected an exception for a user without a phone.');
+        } catch (RuntimeException $e) {
+            $this->assertSame('User has no phone number to send an SMS to.', $e->getMessage());
+        }
+
+        Http::assertNothingSent();
     }
 }

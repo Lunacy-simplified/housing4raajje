@@ -74,6 +74,11 @@ class User extends Authenticatable implements MustVerifyEmail
         };
     }
 
+    public function hasVerifiedPhone()
+    {
+        return $this->phone_verified_at !== null;
+    }
+
     public function loggedViewings(): HasMany
     {
         return $this->hasMany(Viewing::class, 'logged_by_user_id');

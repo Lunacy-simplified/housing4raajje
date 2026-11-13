@@ -1,7 +1,7 @@
 # Frontend handoff: authentication and staff management
 
 Backend by Looth: login, registration, admin staff management (Sprint 2).
-Last updated: 29 October 2026 (added MFA).
+Last updated: 14 November 2026 (added phone verification).
 
 ## What this is
 
@@ -161,7 +161,7 @@ Staff can't register. Their accounts are created by the admin (section 5).
   `$portal`, the portal's display name, and contains the logout form.
 - **Dashboards with data:** a dashboard that shows data (counts, lists, recent activity) needs a
   controller behind it. Agree on who builds it before starting.
-- **Every dashboard** needs the logout form.
+- **Every dashboard** needs the logout form, plus the email and phone verification badges (sections 7 and 11).
 
 ## 4. Staff list (admin)
 
@@ -426,15 +426,66 @@ They are **not** logged in until the code is correct.
 - Limits: 5 attempts per minute on the code form, and 3 resends per minute.
 - "Remember me" on the sign-in page has no effect for admins and managers. The trusted-device checkbox replaces it.
 
+## 11. Phone verification (SMS)
+
+Any logged-in user can verify their phone number with a 6-digit code sent by SMS. It's **optional**:
+nothing is blocked while a phone is unverified, except that an owner's number is only shown on
+listings once it's verified (BR-08, below). MFA codes still go by email.
+
+| | |
+|---|---|
+| View | `resources/views/auth/verify-phone.blade.php` |
+| URL | `GET /phone/verify`, route `phone.verification.show` (logged-in users only) |
+| Data received | none. Use `auth()->user()->phone` and `auth()->user()->hasVerifiedPhone()` |
+
+Phone numbers are stored as **7 digits** (for example `7771234`). Show them as they are; the `960`
+country code is only added when the SMS is sent.
+
+**Send form:** `POST` to `route('phone.verification.send')`, with `@csrf` and a "Send code" button. No fields.
+- **On success:** `session('status')` is "We sent a 6-digit code to your phone." Any older code stops working.
+- **Already verified:** the status is "Your phone is already verified." and no SMS is sent.
+- **Errors** appear on `code`:
+  - "Please wait a minute before asking for another code."
+  - "You've reached the limit of 5 codes in 24 hours. Please try again later."
+  - "We couldn't send the code. Please try again later." (the SMS service failed; the real reason is only in the log)
+  - "Add a phone number to your account first."
+- **Disable the button after it's clicked.** Sending an SMS takes a moment, and a second click
+  within a minute only shows the "wait a minute" error.
+
+**Code form:** `POST` to `route('phone.verification.verify')`
+
+| Field `name` | Type | Notes |
+|---|---|---|
+| `code` | text | 6 digits. Keep `inputmode="numeric"` and `autocomplete="one-time-code"` (phones can fill it in) |
+
+- **Errors** appear on `code`, for example "The code is incorrect or has expired."
+- **On success:** redirected to their dashboard with the status "Phone verified."
+
+**Rules worth showing on the page:**
+- Each code expires after **10 minutes** and works once.
+- After 5 wrong attempts the code stops working, and the user must request a new one.
+- Limits: 1 code per minute and 5 codes per 24 hours for each user, and 5 attempts per minute on the code form.
+
+**Verified badge:** use `auth()->user()->hasVerifiedPhone()` (true or false). The placeholder dashboard
+shows "Phone verified ✓", or "Not verified" plus a "Verify my phone" link to `route('phone.verification.show')`.
+Keep something like that in the real dashboards or on a profile page.
+
+**Phone number changes:** if an admin changes a staff member's phone, that person's phone is reset
+to "not verified", and a code already sent to the old number stops working.
+
+**Rule for listings (BR-08):** a listing shows the owner's phone number **only if it's verified**:
+```blade
+@if ($property->owner->hasVerifiedPhone())
+    <p>Phone: {{ $property->owner->phone }}</p>
+@endif
+```
+
 ---
 
 ## Not built yet
 
 Don't build pages for these yet:
 
-- **Phone verification (SMS):** Looth, Sprint 3. Waiting for MsgOwl to approve the sender ID.
-  Once phone verification exists, listings show an owner's phone number **only if it's verified** (BR-08).
-  Their pages and field names will be added to this document when they're ready.
 - **A branch manager's view of their own branch's staff:** a separate manager-portal feature, not part of this work.
 
 ## Checklist before opening a pull request for a page

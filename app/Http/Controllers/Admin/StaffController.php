@@ -201,6 +201,7 @@ class StaffController extends Controller
         DB::transaction(function () use ($user, $validated) {
             $role = Role::where('code', $validated['role'])->firstOrFail();
             $emailChanged = $user->email !== $validated['email'];
+            $phoneChanged = $user->phone !== $validated['phone'];
 
             $user->update([
                 'name' => $validated['name'],
@@ -210,6 +211,15 @@ class StaffController extends Controller
 
             if ($emailChanged) {
                 $user->email_verified_at = null;
+            }
+
+            // A new number isn't proven yet, and a code sent to the old number must stop working.
+            if ($phoneChanged) {
+                $user->phone_verified_at = null;
+                $user->oneTimeCodes()
+                    ->where('purpose', 'phone_verification')
+                    ->whereNull('consumed_at')
+                    ->update(['consumed_at' => now()]);
             }
 
             $user->role_id = $role->id;
