@@ -36,6 +36,18 @@
         </p>
     @endif
 
+    <h2>Phone Verification</h2>
+
+    @if (auth()->user()->hasVerifiedPhone())
+        <p>Phone verified ✓</p>
+    @else
+        <p>Not verified</p>
+
+        <p>
+            <a href="{{ route('phone.verification.show') }}">Verify my phone</a>
+        </p>
+    @endif
+
     <form method="POST" action="{{ route('logout') }}">
         @csrf
         <button type="submit">Log out</button>

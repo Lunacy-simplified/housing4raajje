@@ -3,8 +3,9 @@
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\MfaController;
-use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\Auth\PhoneVerificationController;
+use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
@@ -77,5 +78,16 @@ Route::middleware('auth')->group(function () {
     ])->middleware('throttle:6,1')
         ->name('verification.send');
 
+    Route::get('/phone/verify', [PhoneVerificationController::class, 'show'])
+        ->name('phone.verification.show');
+
+    Route::post('/phone/verification-code', [PhoneVerificationController::class, 'send'])
+        ->middleware('throttle:6,1')
+        ->name('phone.verification.send');
+
+    Route::post('/phone/verify', [PhoneVerificationController::class, 'verify'])
+        ->middleware('throttle:5,1')
+        ->name('phone.verification.verify');
+    
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
 });

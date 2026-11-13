@@ -5,6 +5,7 @@ namespace App\Notifications;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use App\Notifications\Channels\SmsChannel;
 
 class OneTimeCodeNotification extends Notification
 {
@@ -13,6 +14,7 @@ class OneTimeCodeNotification extends Notification
     public function __construct(
         public string $code,
         public int $minutes,
+        public string $channel = 'email',
     ) {}
 
     /**
@@ -22,7 +24,7 @@ class OneTimeCodeNotification extends Notification
      */
     public function via(): array
     {
-        return ['mail'];
+        return $this->channel === 'sms' ? [SmsChannel::class] : ['mail'];
     }
 
     /**
@@ -35,5 +37,10 @@ class OneTimeCodeNotification extends Notification
             ->line("Your sign-in code is: {$this->code}")
             ->line("It expires in {$this->minutes} minutes.")
             ->line('If you didn\'t try to sign in, change your password.');
+    }
+
+    public function toSms()
+    {
+        return "Your Housing_4_Raajje verification code is {$this->code}. It expires in {$this->minutes} minutes.";
     }
 }

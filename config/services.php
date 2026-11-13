@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+    'sms' => [
+        'driver' => env('SMS_DRIVER', 'log'),
+    ],
+
+    'msgowl' => [
+        'access_key' => env('MSGOWL_ACCESS_KEY'),
+        'sender_id' => env('MSGOWL_SENDER_ID'),
+    ],
+
 ];

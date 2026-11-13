@@ -74,6 +74,11 @@ class User extends Authenticatable implements MustVerifyEmail
         };
     }
 
+    public function hasVerifiedPhone()
+    {
+        return $this->phone_verified_at !== null;
+    }
+
     public function loggedViewings(): HasMany
     {
         return $this->hasMany(Viewing::class, 'logged_by_user_id');
@@ -124,6 +129,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function requiresMfa()
     {
         return in_array($this->role?->code, self::MFA_ROLES, true);
+    }
+
+    public function routeNotificationForSms()
+    {
+        return $this->phone ? '960'.$this->phone : null;
     }
 
     public function scheduledViewings(): HasMany

@@ -7,7 +7,9 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Hash;
+use App\Notifications\OneTimeCodeNotification;
 use App\Notifications\StaffInvitation;
+use App\Services\OtpService;
 use Tests\TestCase;
 
 class StaffTest extends TestCase
@@ -771,5 +773,62 @@ class StaffTest extends TestCase
             $originalVerifiedAt->toDateTimeString(),
             $staff->fresh()->email_verified_at->toDateTimeString()
         );
+    }
+
+    private function updateStaffPhone(User $staff, string $phone)
+    {
+        return $this->actingAs($this->admin)
+            ->put(route('admin.staff.update', $staff), [
+                'name' => $staff->name,
+                'email' => $staff->email,
+                'phone' => $phone,
+                'role' => 'property_specialist',
+                'branch_id' => $staff->staffProfile->branch_id,
+                'job_title' => 'Property Specialist',
+                'hired_on' => null,
+            ]);
+    }
+
+    public function test_changing_staff_phone_resets_phone_verification(): void
+    {
+        $staff = $this->makeStaff('property_specialist', 'Phone Change Staff');
+        $staff->forceFill(['phone' => '7771234', 'phone_verified_at' => now()])->save();
+
+        $this->updateStaffPhone($staff, '7779999')
+            ->assertRedirect(route('admin.staff.index'))
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame('7779999', $staff->fresh()->phone);
+        $this->assertNull($staff->fresh()->phone_verified_at);
+    }
+
+    public function test_saving_same_staff_phone_keeps_phone_verification(): void
+    {
+        $staff = $this->makeStaff('property_specialist', 'Same Phone Staff');
+        $staff->forceFill(['phone' => '7771234', 'phone_verified_at' => now()])->save();
+
+        $this->updateStaffPhone($staff, '7771234')
+            ->assertRedirect(route('admin.staff.index'))
+            ->assertSessionHasNoErrors();
+
+        $this->assertNotNull($staff->fresh()->phone_verified_at);
+    }
+
+    public function test_changing_staff_phone_cancels_a_pending_phone_code(): void
+    {
+        Notification::fake();
+
+        $staff = $this->makeStaff('property_specialist', 'Pending Code Staff');
+        $staff->forceFill(['phone' => '7771234'])->save();
+
+        $otp = app(OtpService::class);
+        $otp->send($staff, 'phone_verification', 'sms');
+        $code = Notification::sent($staff, OneTimeCodeNotification::class)->last()->code;
+
+        $this->updateStaffPhone($staff, '7779999')
+            ->assertSessionHasNoErrors();
+
+        // The code went to the old number, so it must not verify the new one.
+        $this->assertFalse($otp->verify($staff->fresh(), 'phone_verification', $code));
     }
 }
