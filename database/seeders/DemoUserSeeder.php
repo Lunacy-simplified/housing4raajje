@@ -21,6 +21,7 @@ class DemoUserSeeder extends Seeder
         $demoUsers = [
             [
                 'email' => 'admin@h4r.local',
+                'phone' => '7000006',
                 'name' => 'System Administrator',
                 'password' => 'SecretAdmin123!',
                 'role_code' => 'system_admin',
@@ -34,6 +35,7 @@ class DemoUserSeeder extends Seeder
             ],
             [
                 'email' => 'manager@h4r.local',
+                'phone' => '7000005',
                 'name' => 'Malé Branch Manager',
                 'password' => 'SecretManager123!',
                 'role_code' => 'branch_manager',
@@ -47,6 +49,7 @@ class DemoUserSeeder extends Seeder
             ],
             [
                 'email' => 'specialist@h4r.local',
+                'phone' => '7000004',
                 'name' => 'Property Specialist',
                 'password' => 'SecretSpecialist123!',
                 'role_code' => 'property_specialist',
@@ -60,6 +63,7 @@ class DemoUserSeeder extends Seeder
             ],
             [
                 'email' => 'reception@h4r.local',
+                'phone' => '7000003',
                 'name' => 'Malé Front Desk',
                 'password' => 'SecretReception123!',
                 'role_code' => 'receptionist',
@@ -73,6 +77,7 @@ class DemoUserSeeder extends Seeder
             ],
             [
                 'email' => 'owner@h4r.local',
+                'phone' => '7000002',
                 'name' => 'Property Owner Account',
                 'password' => 'SecretOwner123!',
                 'role_code' => 'owner',
@@ -83,6 +88,7 @@ class DemoUserSeeder extends Seeder
             ],
             [
                 'email' => 'client@h4r.local',
+                'phone' => '7000001',
                 'name' => 'Rental Client Account',
                 'password' => 'SecretClient123!',
                 'role_code' => 'client',
@@ -101,6 +107,7 @@ class DemoUserSeeder extends Seeder
 
             // Set properties manually to bypass Fillable guardrails cleanly
             $user = User::firstOrNew(['email' => $userData['email']]);
+            $user->phone = $userData['phone'];
             $user->name = $userData['name'];
             $user->password = $userData['password']; // Plain string; automatically handled by hashed cast
             $user->role_id = $role->id;

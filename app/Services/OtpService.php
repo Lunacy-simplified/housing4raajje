@@ -31,7 +31,7 @@ class OtpService
             'expires_at' => now()->addMinutes(self::EXPIRY_MINUTES),
         ]);
 
-        $user->notify(new OneTimeCodeNotification($code, self::EXPIRY_MINUTES));
+        $user->notify(new OneTimeCodeNotification($code, self::EXPIRY_MINUTES, $channel));
     }
 
     public function verify(User $user, $purpose, $code)

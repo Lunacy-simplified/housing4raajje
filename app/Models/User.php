@@ -126,6 +126,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return in_array($this->role?->code, self::MFA_ROLES, true);
     }
 
+    public function routeNotificationForSms()
+    {
+        return $this->phone ? '960'.$this->phone : null;
+    }
+
     public function scheduledViewings(): HasMany
     {
         return $this->hasMany(Viewing::class, 'scheduled_by_user_id');
