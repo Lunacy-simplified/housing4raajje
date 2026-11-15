@@ -1,0 +1,19 @@
+{{--
+    The full H4R logo (house mark, "H4R" and "PROPERTY MANAGEMENT").
+    Used only on account pages (sign in, register, password reset...). Same drawing as public/images/logo.svg.
+--}}
+<svg viewBox="170 215 1200 575" role="img" aria-label="H4R Property Management logo">
+    <g fill="#111111">
+        <path d="M440 405 L494 372 V592 H440 Z"></path>
+        <rect x="494" y="465" width="102" height="40"></rect>
+        <path d="M596 330 L768 233 L968 355 H907 L768 270 L638 345 V520 L596 555 Z"></path>
+        <rect x="733" y="322" width="30" height="28"></rect><rect x="775" y="322" width="30" height="28"></rect>
+        <rect x="733" y="362" width="30" height="28"></rect><rect x="775" y="362" width="30" height="28"></rect>
+        <path fill-rule="evenodd" d="M626 552 L857 383 V592 H816 V552 Z M730 513 L816 447 V513 Z"></path>
+        <rect x="878" y="510" width="29" height="82"></rect>
+        <path d="M878 378 H1015 C1055 378 1082 405 1082 442 C1082 480 1052 508 1012 510 H1005 L1095 592 H1030 L898 474 H1010 C1030 474 1040 460 1040 442 C1040 424 1030 418 1012 418 H878 Z"></path>
+    </g>
+    <text x="768" y="715" text-anchor="middle" font-family="Montserrat, 'Helvetica Neue', Arial, sans-serif" font-size="92" font-weight="700" letter-spacing="34" fill="#111111">H4R</text>
+    <text x="768" y="766" text-anchor="middle" font-family="Montserrat, 'Helvetica Neue', Arial, sans-serif" font-size="32" font-weight="600" letter-spacing="13" fill="#111111">PROPERTY MANAGEMENT</text>
+    <path d="M183 752 H298 M1238 752 H1352" stroke="#111111" stroke-width="3"></path>
+</svg>
