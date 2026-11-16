@@ -122,7 +122,7 @@ h2.h{margin:0;font-size:20px;line-height:1.25;font-weight:600;letter-spacing:-.0
 
 /* tables: list rows, hairline separators, 44px+ rows */
 .sx{overflow-x:auto}
-.tbl{width:100%;border-collapse:collapse;min-width:860px}
+.tbl{width:100%;border-collapse:collapse;min-width:600px}
 .tbl th{text-align:left;padding:var(--s-3) var(--s-4);font-size:12px;font-weight:600;color:var(--label-2);white-space:nowrap;border-bottom:.5px solid var(--sep)}
 .tbl td{padding:var(--s-3) var(--s-4);height:44px;border-top:.5px solid var(--sep);vertical-align:middle}
 .tbl tr:first-child td{border-top:0}

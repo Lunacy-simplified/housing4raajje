@@ -91,3 +91,40 @@ When working in a local workspace environment (`APP_ENV=local`), the database pr
 ### Design
 
 The front end follows Apple's Human Interface Guidelines with a minimal feature set. Read [`docs/design.md`](docs/design.md) before building a page, and [`docs/frontend-handoff.md`](docs/frontend-handoff.md) for each page's contract with the backend.
+
+---
+
+### Demo data
+
+`php artisan migrate:fresh --seed` on a local environment also loads sample records (`DemoDataSeeder`): four properties at
+different stages, viewings with feedback, an application, an active lease with payments and a payout, a maintenance
+request, an inquiry and a conversation. All six demo accounts are marked as verified so nothing is blocked.
+
+### Daily job
+
+Lease expiry and renewal reminders run once a day:
+
+```bash
+# Run it once by hand
+docker compose exec app php artisan leases:daily
+
+# Or keep Laravel's scheduler running (it runs the job at 08:00)
+docker compose exec app php artisan schedule:work
+```
+
+### Database backup and restore
+
+```bash
+# Back up to a file on your machine
+docker compose exec -T db sh -c 'pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB"' > backup.sql
+
+# Restore it
+docker compose exec -T db sh -c 'psql -U "$POSTGRES_USER" "$POSTGRES_DB"' < backup.sql
+```
+
+Never commit a backup file: it contains personal data.
+
+### Project documentation
+
+- [`docs/assignment-brief.md`](docs/assignment-brief.md): the brief, the source of truth for scope.
+- [`docs/report/`](docs/report/README.md): conceptual diagram, data dictionary, relational schema, use cases, Scrum log template and screenshots.
