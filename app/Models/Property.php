@@ -61,6 +61,25 @@ class Property extends Model
         return $this->hasMany(MessageThread::class);
     }
 
+    /**
+     * Lease matchmaker: active clients whose maximum rent covers this property,
+     * who want to live in its branch area, and whose room count (if they gave one) matches.
+     */
+    public function matchingClients()
+    {
+        return User::where('is_active', true)->whereHas('clientProfile', fn ($q) => $q
+            ->where('max_monthly_rent', '>=', $this->monthly_rent)
+            ->where(fn ($q) => $q->whereNull('preferred_rooms')->orWhere('preferred_rooms', $this->rooms))
+            ->whereHas('preferredBranches', fn ($q) => $q->where('branches.id', $this->branch_id)));
+    }
+
+    /** One-line address, e.g. "Unit 3A, Rose Villa, Majeedhee Magu, Henveiru". */
+    public function address(): string
+    {
+        return collect([$this->unit_no ? "Unit {$this->unit_no}" : null, $this->house_name, $this->road, $this->district->name])
+            ->filter()->implode(', ');
+    }
+
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_user_id');

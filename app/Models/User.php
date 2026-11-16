@@ -34,6 +34,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'phone_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'mfa_enabled' => 'boolean',
             'last_login_at' => 'datetime',
         ];
     }
@@ -41,6 +42,32 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $attributes = [
         'is_active' => true,
     ];
+
+    const STAFF_ROLES = ['system_admin', 'branch_manager', 'property_specialist', 'receptionist'];
+
+    public function hasRole(string ...$codes): bool
+    {
+        return in_array($this->role?->code, $codes, true);
+    }
+
+    public function isStaff(): bool
+    {
+        return $this->hasRole(...self::STAFF_ROLES);
+    }
+
+    /** Home branch of a staff member; null for administrators, owners and clients. */
+    public function branchId(): ?int
+    {
+        return $this->staffProfile?->branch_id;
+    }
+
+    /** Leases waiting for this user's signature. */
+    public function leasesToSign()
+    {
+        return Lease::where('status', 'pending_signature')
+            ->where(fn ($q) => $q->where('client_user_id', $this->id)->orWhere('owner_user_id', $this->id))
+            ->whereDoesntHave('signatures', fn ($q) => $q->where('signed_by_user_id', $this->id));
+    }
 
     public function applications(): HasMany
     {
@@ -128,7 +155,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function requiresMfa()
     {
-        return in_array($this->role?->code, self::MFA_ROLES, true);
+        return in_array($this->role?->code, self::MFA_ROLES, true) || $this->mfa_enabled;
     }
 
     public function routeNotificationForSms()
@@ -149,6 +176,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public function trustedDevices(): HasMany
     {
         return $this->hasMany(TrustedDevice::class);
+    }
+
+    public function verifiedProperties(): HasMany
+    {
+        return $this->hasMany(Property::class, 'verified_by_user_id');
+    }
+
+    public function executedLeases(): HasMany
+    {
+        return $this->hasMany(Lease::class, 'executed_by_user_id');
     }
 
     public function viewings(): HasMany

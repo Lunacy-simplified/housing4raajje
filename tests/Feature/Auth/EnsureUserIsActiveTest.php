@@ -33,6 +33,11 @@ class EnsureUserIsActiveTest extends TestCase
         $user = User::factory()->role('receptionist')->create([
             'is_active' => true,
         ]);
+        // Staff need a home branch to use the staff portal.
+        $user->staffProfile()->create([
+            'staff_code' => 'H4R-STF-9001',
+            'branch_id' => \App\Models\Branch::value('id'),
+        ]);
 
         $this->actingAs($user)
             ->get('/staff')
