@@ -1,48 +1,57 @@
-{{-- TEMPORARY: frontend team restyles this. Keep route('phone.verification.send'), route('phone.verification.verify'), @csrf, the field name "code" and @error('code'). --}}
-<!DOCTYPE html>
-<html lang="en">
+{{--
+    Phone verification page (GET /phone/verify, route "phone.verification.show"). Handoff doc section 11.
+    Uses auth()->user()->phone and auth()->user()->hasVerifiedPhone().
+    Must keep: POST to route('phone.verification.send') (no fields), POST to route('phone.verification.verify')
+    with field "code", @csrf on both, errors on "code", session('status').
+--}}
+@extends('layouts.auth')
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Verify your phone</title>
-</head>
+@section('title', 'Verify your phone')
 
-<body>
-    <h1>Verify your phone</h1>
+@section('content')
+    @php($user = auth()->user())
 
-    <p>Phone number: {{ auth()->user()->phone ?? 'not set' }}</p>
+    <div>
+        <h1 class="t">Verify your phone</h1>
+        <p class="sub">Optional. For owners, your number only shows on your listings once it's verified.</p>
+    </div>
 
-    @if (session('status'))
-        <p role="status">{{ session('status') }}</p>
-    @endif
+    <div class="box row">
+        <span><span class="muted">Phone number</span><br><b class="mono">{{ $user->phone ?? 'Not set' }}</b></span>
+        @if ($user->hasVerifiedPhone())
+            <span class="b b-ok">Phone verified ✓</span>
+        @else
+            <span class="b b-warn">Not verified</span>
+        @endif
+    </div>
 
-    @if (auth()->user()->hasVerifiedPhone())
-        <p>Phone verified ✓</p>
-    @else
-        <p>We'll text a 6-digit code to this number. It expires in 10 minutes.</p>
+    @include('partials.status')
 
-        <form method="POST" action="{{ route('phone.verification.send') }}">
+    @unless ($user->hasVerifiedPhone())
+        {{-- Sending an SMS takes a moment: the button is disabled after the first click so it can't be sent twice. --}}
+        <form method="POST" action="{{ route('phone.verification.send') }}" onsubmit="this.querySelector('button').disabled = true">
             @csrf
-            <button type="submit">Send code</button>
+            <span class="hint">We'll text a 6-digit code to this number. It expires in 10 minutes.</span>
+            <button type="submit" class="btn btn-n">Send code</button>
         </form>
 
-        <form method="POST" action="{{ route('phone.verification.verify') }}">
+        <form method="POST" action="{{ route('phone.verification.verify') }}" class="sep">
             @csrf
 
-            <div>
+            <div class="fld">
                 <label for="code">Code</label>
-                <input id="code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code"
-                    maxlength="6" required>
+                <input id="code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required
+                    placeholder="000000"
+                    class="in mono code @error('code') bad @enderror" aria-describedby="code-hint @error('code') code-error @enderror" @error('code') aria-invalid="true" @enderror>
+                <span id="code-hint" class="hint">After 5 wrong tries, ask for a new code. Up to 5 codes a day.</span>
                 @error('code')
-                    <p role="alert" style="color:red">{{ $message }}</p>
+                    <span id="code-error" class="err" role="alert">{{ $message }}</span>
                 @enderror
             </div>
-            <button type="submit">Verify</button>
+
+            <button type="submit" class="btn btn-p">Verify</button>
         </form>
-    @endif
+    @endunless
 
-    <p><a href="{{ route(auth()->user()->dashboardRoute()) }}">Back to dashboard</a></p>
-</body>
-
-</html>
+    <p class="foot"><a href="{{ route($user->dashboardRoute()) }}">Back to dashboard</a></p>
+@endsection

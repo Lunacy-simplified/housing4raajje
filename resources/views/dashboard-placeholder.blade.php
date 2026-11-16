@@ -1,57 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
+{{--
+    Placeholder dashboard for all five portals until each gets a real one. Handoff doc section 3.
+    Receives $portal (display name). Staff roles get the side-menu layout; owners and clients the top-menu one.
+    session('status') is shown by the layout.
+--}}
+@extends(auth()->user()->staffProfile ? 'layouts.portal' : 'layouts.portal-top')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $portal }} Dashboard - Housing4Raajje</title>
-</head>
+@section('title', $portal)
 
-<body>
-    <h1>{{ $portal }} Dashboard</h1>
+@section('content')
+    @php($user = auth()->user())
 
-    <p>Welcome, {{ auth()->user()->name }}!</p>
+    <div class="ph">
+        <div>
+            <span class="crumb">{{ $portal }}</span>
+            <h1 class="t">Welcome, {{ $user->name }}</h1>
+        </div>
+    </div>
 
-    <h2>Email Verification</h2>
+    <div class="split">
+        <section class="card narrow">
+            <div class="row">
+                <h2 class="h">Email</h2>
+                @if ($user->hasVerifiedEmail())
+                    <span class="b b-ok">Email verified ✓</span>
+                @else
+                    <span class="b b-warn">Not verified</span>
+                @endif
+            </div>
+            <p class="hint">{{ $user->email }}</p>
 
-    @if (session('status'))
-        <p>{{ session('status') }}</p>
-    @endif
+            @unless ($user->hasVerifiedEmail())
+                <p class="hint">Verify your email to use restricted features.</p>
+                <form method="POST" action="{{ route('verification.send') }}">
+                    @csrf
+                    <button type="submit" class="btn btn-s">Resend verification email</button>
+                </form>
+            @endunless
+        </section>
 
-    @if (auth()->user()->hasVerifiedEmail())
-        <p>Email verified ✓</p>
-    @else
-        <p>Not verified</p>
-        <p>Please verify your email to use restricted features.</p>
+        <section class="card narrow">
+            <div class="row">
+                <h2 class="h">Phone</h2>
+                @if ($user->hasVerifiedPhone())
+                    <span class="b b-ok">Phone verified ✓</span>
+                @else
+                    <span class="b b-warn">Not verified</span>
+                @endif
+            </div>
+            <p class="hint mono">{{ $user->phone ?? 'Not set' }}</p>
 
-        <form method="POST" action="{{ route('verification.send') }}">
-            @csrf
-            <button type="submit">Resend verification email</button>
-        </form>
-
-        <p>
-            <a href="{{ route('verification.notice') }}">
-                View verification instructions
-            </a>
-        </p>
-    @endif
-
-    <h2>Phone Verification</h2>
-
-    @if (auth()->user()->hasVerifiedPhone())
-        <p>Phone verified ✓</p>
-    @else
-        <p>Not verified</p>
-
-        <p>
-            <a href="{{ route('phone.verification.show') }}">Verify my phone</a>
-        </p>
-    @endif
-
-    <form method="POST" action="{{ route('logout') }}">
-        @csrf
-        <button type="submit">Log out</button>
-    </form>
-</body>
-
-</html>
+            @unless ($user->hasVerifiedPhone())
+                <a href="{{ route('phone.verification.show') }}" class="btn btn-s">Verify my phone</a>
+            @endunless
+        </section>
+    </div>
+@endsection

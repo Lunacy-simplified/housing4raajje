@@ -85,3 +85,9 @@ When working in a local workspace environment (`APP_ENV=local`), the database pr
 | **Receptionist**        | `reception@h4r.local`      | `SecretReception123!`      | `staff_profiles` (MLE Branch)   |
 | **Asset Owner**         | `owner@h4r.local`          | `SecretOwner123!`          | `owner_profiles`                |
 | **Rental Client**       | `client@h4r.local`         | `SecretClient123!`         | `client_profiles`               |
+
+---
+
+### Design
+
+The front end follows Apple's Human Interface Guidelines with a minimal feature set. Read [`docs/design.md`](docs/design.md) before building a page, and [`docs/frontend-handoff.md`](docs/frontend-handoff.md) for each page's contract with the backend.

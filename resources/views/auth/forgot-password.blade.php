@@ -1,37 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
+{{--
+    Forgot password page (GET /forgot-password, route "password.request"). Handoff doc section 8.
+    Must keep: POST to route('password.email'), @csrf, field "email", errors on "email", session('status').
+    The status message is always the same whether or not the email exists, so the page never reveals who has an account.
+--}}
+@extends('layouts.auth')
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Forgot Password</title>
-</head>
+@section('title', 'Forgot Password')
 
-<body>
-    <h1>Forgot Password</h1>
+@section('content')
+    <div>
+        <h1 class="t">Forgot your password?</h1>
+        <p class="sub">Enter your email. If it's registered, we'll send you a link to choose a new password.</p>
+    </div>
 
-    <p>Enter your email address and, if it is registered, we'll send you a password reset link.</p>
-
-    @if (session('status'))
-        <p role="status">{{ session('status') }}</p>
-    @endif
+    @include('partials.status')
 
     <form method="POST" action="{{ route('password.email') }}">
         @csrf
 
-        <div>
+        <div class="fld">
             <label for="email">Email</label>
-            <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
-                autocomplete="email">
+            <input id="email" type="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="email"
+                class="in @error('email') bad @enderror" @error('email') aria-invalid="true" aria-describedby="email-error" @enderror>
             @error('email')
-                <p role="alert" style="color:red">{{ $message }}</p>
+                <span id="email-error" class="err" role="alert">{{ $message }}</span>
             @enderror
         </div>
 
-        <button type="submit">Send Password Reset Link</button>
+        <button type="submit" class="btn btn-p">Send reset link</button>
     </form>
 
-    <p><a href="{{ route('login') }}">Back to sign in</a></p>
-</body>
-
-</html>
+    <p class="hint">The link works once and expires after 15 minutes.</p>
+    <p class="foot"><a href="{{ route('login') }}">Back to sign in</a></p>
+@endsection
