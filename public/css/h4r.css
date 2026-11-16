@@ -122,7 +122,7 @@ h2.h{margin:0;font-size:20px;line-height:1.25;font-weight:600;letter-spacing:-.0
 
 /* tables: list rows, hairline separators, 44px+ rows */
 .sx{overflow-x:auto}
-.tbl{width:100%;border-collapse:collapse;min-width:860px}
+.tbl{width:100%;border-collapse:collapse;min-width:600px}
 .tbl th{text-align:left;padding:var(--s-3) var(--s-4);font-size:12px;font-weight:600;color:var(--label-2);white-space:nowrap;border-bottom:.5px solid var(--sep)}
 .tbl td{padding:var(--s-3) var(--s-4);height:44px;border-top:.5px solid var(--sep);vertical-align:middle}
 .tbl tr:first-child td{border-top:0}
@@ -199,3 +199,42 @@ select.in{appearance:none;padding-right:36px;background-image:url("data:image/sv
   .t{font-size:28px}
   .who-t{display:none}
 }
+
+/* numbers at a glance (dashboards, reports) */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:var(--s-4)}
+.stat{display:flex;flex-direction:column;gap:var(--s-1);padding:var(--s-5);background:var(--surface);border-radius:var(--r-lg);box-shadow:var(--shadow);color:var(--label)}
+.stat:hover{text-decoration:none}
+.stat b{font-size:28px;line-height:1.15;font-weight:700;letter-spacing:-.02em}
+
+/* label and value pairs */
+.kv{display:grid;grid-template-columns:minmax(130px,auto) 1fr;gap:var(--s-2) var(--s-4);margin:0}
+.kv dt{color:var(--label-2)}
+.kv dd{margin:0;font-weight:500}
+.price{font-size:20px;font-weight:600;letter-spacing:-.01em}
+
+textarea.in{padding:var(--s-3);min-height:88px;resize:vertical;line-height:1.4}
+.b-err{background:var(--red-tint);color:var(--red)}
+
+/* small forms inside table rows */
+.inline{display:flex;flex-wrap:wrap;gap:var(--s-2);align-items:center}
+.inline .in{width:auto;flex:1 1 140px}
+details summary{min-height:44px;display:inline-flex;align-items:center;color:var(--link);font-weight:500;cursor:pointer}
+
+/* share of a total, e.g. rejection reasons */
+.meter{height:8px;border-radius:var(--r-full);background:var(--fill-2);overflow:hidden}
+.meter i{display:block;height:100%;border-radius:var(--r-full);background:var(--accent)}
+
+/* property listings and photos */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--s-5)}
+.grid .card{padding:0;gap:0;overflow:hidden;color:var(--label)}
+.grid .card:hover{text-decoration:none}
+.grid .card>div{padding:var(--s-4);display:flex;flex-direction:column;gap:var(--s-1)}
+.photo{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:var(--fill-2)}
+.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:var(--s-3)}
+.photos .photo{border-radius:var(--r-md)}
+
+/* conversation */
+.msgs{display:flex;flex-direction:column;gap:var(--s-3)}
+.msg{max-width:75%;padding:var(--s-3) var(--s-4);border-radius:18px;background:var(--fill);align-self:flex-start;white-space:pre-line}
+.msg.me{align-self:flex-end;background:var(--accent);color:#fff}
+.msg small{display:block;font-size:12px;opacity:.75;margin-top:2px}

@@ -6,6 +6,12 @@ use App\Http\Controllers\Auth\MfaController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\PhoneVerificationController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\LeaseController;
+use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PhotoController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login');
@@ -90,4 +96,28 @@ Route::middleware('auth')->group(function () {
         ->name('phone.verification.verify');
     
     Route::post('/logout', [LoginController::class, 'destroy'])->name('logout');
+
+    // Pages every signed-in role shares.
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/photos/{photo}', [PhotoController::class, 'show'])->name('photos.show');
+});
+
+// Conversations: owners and clients take part; branch staff supervise (not administrators).
+Route::middleware(['auth', 'role:owner,client,property_specialist,receptionist,branch_manager'])->group(function () {
+    Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/{thread}', [MessageController::class, 'show'])->name('messages.show');
+    Route::post('/messages/{thread}', [MessageController::class, 'reply'])->middleware('throttle:30,1')->name('messages.reply');
+});
+
+Route::middleware(['auth', 'role:owner,client'])->group(function () {
+    Route::post('/messages', [MessageController::class, 'store'])->middleware('throttle:10,1')->name('messages.store');
+
+    Route::get('/leases', [LeaseController::class, 'index'])->name('leases.index');
+    Route::get('/leases/{lease}', [LeaseController::class, 'show'])->name('leases.show');
+    Route::post('/leases/{lease}/sign', [LeaseController::class, 'sign'])->middleware('throttle:5,1')->name('leases.sign');
+
+    Route::get('/maintenance', [MaintenanceController::class, 'index'])->name('maintenance.index');
+    Route::post('/maintenance', [MaintenanceController::class, 'store'])->name('maintenance.store');
 });

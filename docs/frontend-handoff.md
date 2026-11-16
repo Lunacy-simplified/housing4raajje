@@ -144,21 +144,20 @@ Staff can't register. Their accounts are created by the admin (section 5).
 - **Limit:** 10 attempts per minute.
 - **Link to add:** "Already have an account? Sign in", pointing to `route('login')`.
 
-## 3. Dashboards (placeholders)
+## 3. Dashboards
 
 | Route name | URL | Who |
 |---|---|---|
 | `admin.dashboard` | `/admin` | System administrator |
-| `manager.dashboard` | `/manager` | Branch manager |
+| `manager.dashboard` | `/manager` | Branch manager (the branch report) |
 | `staff.dashboard` | `/staff` | Property specialist, receptionist |
 | `owner.dashboard` | `/owner` | Property owner |
 | `client.dashboard` | `/client` | Client |
 
-- **Current state:** all five show `resources/views/dashboard-placeholder.blade.php`. It receives
-  `$portal`, the portal's display name, and contains the logout form.
-- **Dashboards with data:** a dashboard that shows data (counts, lists, recent activity) needs a
-  controller behind it. Agree on who builds it before starting.
-- **Every dashboard** needs the logout form, plus the email and phone verification badges (sections 7 and 11).
+- **View:** `resources/views/dashboard.blade.php` (the manager uses `manager/report.blade.php`). It receives `$portal` and
+  `$stats`, a list of `[label, number, link]` built in `DashboardController`.
+- **Verification reminders:** `partials/verify` shows the email and phone cards until both are verified (sections 7 and 11).
+- **Log out** is in the top bar of every layout.
 
 ## 4. Staff list (admin)
 
@@ -479,11 +478,20 @@ to "not verified", and a code already sent to the old number stops working.
 
 ---
 
-## Not built yet
+## 12. Everything after authentication
 
-Don't build pages for these yet:
+The rental flow is built: properties, search, viewings, applications, leases, payments, payouts, maintenance, messages,
+front desk, manager and admin screens. These pages already use the shared design, so there is no bare view left to restyle.
 
-- **A branch manager's view of their own branch's staff:** a separate manager-portal feature, not part of this work.
+- **What each feature does and its rules:** [`docs/report/04-use-cases.md`](report/04-use-cases.md).
+- **What every screen looks like:** [`docs/report/06-screenshots.md`](report/06-screenshots.md).
+- **Routes:** `routes/owner.php`, `client.php`, `staff.php`, `manager.php`, `admin.php`, and the shared ones at the end of `web.php`.
+  Run `docker compose exec app php artisan route:list` for the full list.
+- **Views:** one folder per portal under `resources/views/` (`owner/`, `client/`, `staff/`, `manager/`, `admin/`), plus shared
+  pages at the top level (`profile`, `notifications`, `maintenance`, `leases/`, `messages/`).
+- **Forms:** use the Blade components described in [`docs/design.md`](design.md) (`<x-field>`, `<x-select>`, `<x-textarea>`, `<x-pill>`).
+
+When restyling one of these pages the same ground rules apply: keep route names, form methods, field names, `@csrf` and `@method`.
 
 ## Checklist before opening a pull request for a page
 

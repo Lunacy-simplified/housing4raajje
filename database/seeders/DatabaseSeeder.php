@@ -21,11 +21,13 @@ class DatabaseSeeder extends Seeder
             FeedbackCategorySeeder::class,
             LeaseTermSeeder::class,
             PaymentMethodSeeder::class,
+            SystemParameterSeeder::class,
         ]);
 
         if (app()->environment('local')) {
             $this->call([
                 DemoUserSeeder::class,
+                DemoDataSeeder::class,
             ]);
         }
     }

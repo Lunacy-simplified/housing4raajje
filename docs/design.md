@@ -17,6 +17,7 @@ Every page uses one stylesheet, `public/css/h4r.css`, and three layouts. Read th
 - One primary button per screen or card. Everything else is secondary.
 - Add a CSS rule only when a page uses it. Delete rules nobody uses.
 - No CSS frameworks, no JavaScript frameworks, no web fonts, and no inline `style="..."`.
+  The one exception is a width that comes from data, such as the `.meter` bar.
 
 ## Tokens
 
@@ -52,12 +53,34 @@ Rules:
 | Two options | `.seg` segmented control with `a.on` for the current one |
 | Table | `.card.flush` > `.sx` > `table.tbl`; `.r` right-aligns a cell; empty state `td.empty` |
 | Layout | `.split` > `.wide` + `.narrow`; `.stack` for a vertical column; `.row` for a label and value on one line |
+| Numbers at a glance | `.stats` > `.stat` (a hint and a `<b>` number); make it a link when there's a list behind it |
+| Facts | `dl.kv` with `dt` and `dd` pairs |
+| Share of a total | `.meter` > `i` with a percentage width, plus the number in words next to it |
+| Listings and photos | `.grid` of `a.card` with an `img.photo`; `.photos` for a gallery |
+| Conversation | `.msgs` > `.msg` (add `.me` for the reader's own messages) |
+| Small form in a table row | `form.inline` with bare `.in` controls (give each an `aria-label`), and `@include('partials.errors')` once above the table |
+| Rarely used action | `<details>` with a `<summary>`, e.g. `partials/escalate` |
+
+### Blade components
+
+Use these instead of writing the label, control, hint and error by hand:
+
+```blade
+<x-field name="road" label="Road" :value="$property->road" required />
+<x-field name="monthly_rent" label="Monthly rent (MVR)" type="number" min="1" hint="Per month." />
+<x-select name="district_id" label="District" :options="$districts" placeholder="Choose a district" />
+<x-textarea name="description" label="What is wrong?" />
+<x-pill :status="$lease->status" />   {{-- any status value; picks the colour and the wording --}}
+```
+
+They refill from `old()` and show the field's validation error by themselves.
 
 ## Layouts
 
 - `layouts.auth` for signed-out pages and single-task pages (sign in, codes, verification).
 - `layouts.portal` for staff (sidebar). Add menu items in `partials/nav-side`.
 - `layouts.portal-top` for owners and clients (top menu). Add menu items in `partials/nav-top`.
+- `layouts.app` for any signed-in page: it picks the sidebar for staff and the top menu for owners and clients. Use this one by default.
 
 ## Before opening a PR
 

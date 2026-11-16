@@ -15,6 +15,12 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 
 class SystemParameter extends Model
 {
+    /** Read a setting, e.g. SystemParameter::setting('management_fee_percent', 10). */
+    public static function setting(string $key, $default = null)
+    {
+        return static::where('key', $key)->value('value') ?? $default;
+    }
+
     public function updatedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by_user_id');
