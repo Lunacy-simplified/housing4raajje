@@ -46,5 +46,5 @@
         <button type="submit" class="btn btn-p">Set password</button>
     </form>
 
-    <p class="hint" style="margin: 0">This link works once and is valid for 24 hours. If it has expired, ask your administrator to resend it.</p>
+    <p class="hint">This link works once and is valid for 24 hours. If it has expired, ask your administrator to resend it.</p>
 @endsection

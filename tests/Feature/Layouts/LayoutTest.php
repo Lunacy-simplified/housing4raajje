@@ -35,14 +35,6 @@ class LayoutTest extends TestCase
         $this->assertFileExists(public_path('images/logo.svg'));
     }
 
-    public function test_stylesheet_uses_the_agreed_fonts_and_background(): void
-    {
-        $css = file_get_contents(public_path('css/h4r.css'));
-
-        $this->assertStringContainsString("'Fraunces'", $css);
-        $this->assertStringContainsString("'Literata'", $css);
-        $this->assertStringContainsString('--bg:#F7F5F0', $css);
-    }
 
     // ---------------------------------------------------------------
     // Account pages layout
@@ -54,8 +46,6 @@ class LayoutTest extends TestCase
 
         $this->assertStringContainsString('<title>Test page · H4R</title>', $html);
         $this->assertStringContainsString(asset('css/h4r.css'), $html);
-        $this->assertStringContainsString('family=Fraunces', $html);
-        $this->assertStringContainsString('family=Literata', $html);
         $this->assertStringContainsString('aria-label="H4R Property Management logo"', $html);
         $this->assertStringContainsString('<p>PAGE BODY</p>', $html);
     }

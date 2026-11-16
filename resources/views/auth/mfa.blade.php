@@ -21,8 +21,8 @@
         <div class="fld">
             <label for="code">Sign-in code</label>
             <input id="code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required autofocus
-                placeholder="000000" style="height: 52px; font-size: 24px; letter-spacing: 0.4em; text-align: center"
-                class="in mono @error('code') bad @enderror" @error('code') aria-invalid="true" aria-describedby="code-error" @enderror>
+                placeholder="000000"
+                class="in mono code @error('code') bad @enderror" @error('code') aria-invalid="true" aria-describedby="code-error" @enderror>
             @error('code')
                 <span id="code-error" class="err" role="alert">{{ $message }}</span>
             @enderror
@@ -33,11 +33,11 @@
         <button type="submit" class="btn btn-p">Verify</button>
     </form>
 
-    <form method="POST" action="{{ route('mfa.resend') }}" style="border-top: 1px solid var(--line); padding-top: 16px">
+    <form method="POST" action="{{ route('mfa.resend') }}" class="sep">
         @csrf
         <span class="hint">Didn't get it? After 5 wrong tries you need a new code.</span>
         <button type="submit" class="btn btn-n">Send a new code</button>
     </form>
 
-    <p class="foot" style="margin: 0"><a href="{{ route('login') }}">Back to sign in</a></p>
+    <p class="foot"><a href="{{ route('login') }}">Back to sign in</a></p>
 @endsection

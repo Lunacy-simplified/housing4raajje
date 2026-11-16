@@ -119,7 +119,7 @@
                 </div>
             </div>
 
-            <div class="acts" style="padding-top: 6px; border-top: 1px solid var(--line-2)">
+            <div class="acts form-end">
                 <button type="submit" class="btn btn-p">Save changes</button>
                 <a href="{{ route('admin.staff.index') }}" class="btn btn-n">Back to staff list</a>
             </div>
@@ -131,7 +131,7 @@
                 <form method="POST" action="{{ route('admin.staff.invite', $user) }}" class="card">
                     @csrf
                     <h2 class="h">Invitation pending</h2>
-                    <p class="hint" style="margin: 0">This staff member hasn't set up their account yet. Invite links last 24 hours.</p>
+                    <p class="hint">This staff member hasn't set up their account yet. Invite links last 24 hours.</p>
                     <button type="submit" class="btn btn-s">Resend invite</button>
                 </form>
             @endif
@@ -144,7 +144,7 @@
                 <input type="hidden" name="is_active" value="{{ $user->is_active ? '0' : '1' }}">
 
                 <h2 class="h">Account status</h2>
-                <p class="hint" style="margin: 0">
+                <p class="hint">
                     Current status: <b>{{ $user->is_active ? 'Active' : 'Inactive' }}</b>.
                     @if ($user->is_active)
                         Deactivating signs them out on their next click and blocks sign-in.
@@ -158,7 +158,7 @@
                 </button>
             </form>
 
-            <p class="hint" style="margin: 0">Passwords aren't changed here. Staff use "Forgot password?" on the sign-in page.</p>
+            <p class="hint">Passwords aren't changed here. Staff use "Forgot password?" on the sign-in page.</p>
         </div>
     </div>
 @endsection

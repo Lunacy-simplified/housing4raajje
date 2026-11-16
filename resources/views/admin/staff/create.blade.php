@@ -21,7 +21,7 @@
         <div class="al al-err" role="alert"><span>Please fix the {{ Str::plural('error', $errors->count()) }} below.</span></div>
     @endif
 
-    <form method="POST" action="{{ route('admin.staff.store') }}" class="card" style="max-width: 760px">
+    <form method="POST" action="{{ route('admin.staff.store') }}" class="card limit">
         @csrf
 
         <div class="fgrid">
@@ -102,7 +102,7 @@
             </div>
         </div>
 
-        <div class="acts" style="padding-top: 6px; border-top: 1px solid var(--line-2)">
+        <div class="acts form-end">
             <button type="submit" class="btn btn-p">Create staff account</button>
             <a href="{{ route('admin.staff.index') }}" class="btn btn-n">Cancel</a>
         </div>

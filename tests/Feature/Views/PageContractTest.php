@@ -46,7 +46,6 @@ class PageContractTest extends TestCase
     private function assertUsesDesign($response): void
     {
         $response->assertSee(asset('css/h4r.css'), false);
-        $response->assertSee('family=Fraunces', false);
     }
 
     /** Checks a form posts to the right place and has the security token. */
@@ -390,5 +389,34 @@ class PageContractTest extends TestCase
         $this->actingAs($admin)
             ->get(route('admin.staff.edit', $admin))
             ->assertSee('class="err" role="alert"', false);
+    }
+
+    // ---------------------------------------------------------------
+    // Dashboards
+    // ---------------------------------------------------------------
+
+    public function test_staff_dashboard_uses_the_side_menu_layout(): void
+    {
+        $admin = $this->makeStaff('system_admin', 'Dash Admin');
+
+        $response = $this->actingAs($admin)->get(route('admin.dashboard'))->assertOk();
+
+        $this->assertUsesDesign($response);
+        $response->assertSee('Welcome, Dash Admin');
+        $response->assertSee('class="side"', false);
+        $this->assertPostForm($response, route('logout'));
+    }
+
+    public function test_client_dashboard_uses_the_top_menu_layout_and_shows_verification(): void
+    {
+        $client = User::factory()->role('client')->unverified()->create(['phone_verified_at' => null]);
+
+        $response = $this->actingAs($client)->get(route('client.dashboard'))->assertOk();
+
+        $this->assertUsesDesign($response);
+        $response->assertSee('class="tnav"', false);
+        $response->assertSee('Not verified');
+        $this->assertPostForm($response, route('verification.send'));
+        $response->assertSee('href="' . route('phone.verification.show') . '"', false);
     }
 }

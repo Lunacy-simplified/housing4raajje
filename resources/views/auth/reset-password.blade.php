@@ -46,5 +46,5 @@
         <button type="submit" class="btn btn-p">Reset password</button>
     </form>
 
-    <p class="foot" style="margin: 0">Link expired? <a href="{{ route('password.request') }}">Request a new one</a></p>
+    <p class="foot">Link expired? <a href="{{ route('password.request') }}">Request a new one</a></p>
 @endsection

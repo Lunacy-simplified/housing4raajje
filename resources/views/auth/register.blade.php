@@ -90,5 +90,5 @@
         <button type="submit" class="btn btn-p">Create account</button>
     </form>
 
-    <p class="foot" style="margin: 0">Already have an account? <a href="{{ route('login') }}">Sign in</a></p>
+    <p class="foot">Already have an account? <a href="{{ route('login') }}">Sign in</a></p>
 @endsection

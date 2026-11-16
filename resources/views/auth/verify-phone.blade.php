@@ -16,8 +16,8 @@
         <p class="sub">Optional. For owners, your number only shows on your listings once it's verified.</p>
     </div>
 
-    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 12px; background: var(--soft); border: 1px solid var(--line); border-radius: var(--r)">
-        <span><span class="muted">Phone number</span><br><b class="mono" style="font-size: 16px">{{ $user->phone ?? 'Not set' }}</b></span>
+    <div class="box row">
+        <span><span class="muted">Phone number</span><br><b class="mono">{{ $user->phone ?? 'Not set' }}</b></span>
         @if ($user->hasVerifiedPhone())
             <span class="b b-ok">Phone verified ✓</span>
         @else
@@ -35,14 +35,14 @@
             <button type="submit" class="btn btn-n">Send code</button>
         </form>
 
-        <form method="POST" action="{{ route('phone.verification.verify') }}" style="border-top: 1px solid var(--line); padding-top: 16px">
+        <form method="POST" action="{{ route('phone.verification.verify') }}" class="sep">
             @csrf
 
             <div class="fld">
                 <label for="code">Code</label>
                 <input id="code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required
-                    placeholder="000000" style="height: 52px; font-size: 24px; letter-spacing: 0.4em; text-align: center"
-                    class="in mono @error('code') bad @enderror" aria-describedby="code-hint @error('code') code-error @enderror" @error('code') aria-invalid="true" @enderror>
+                    placeholder="000000"
+                    class="in mono code @error('code') bad @enderror" aria-describedby="code-hint @error('code') code-error @enderror" @error('code') aria-invalid="true" @enderror>
                 <span id="code-hint" class="hint">After 5 wrong tries, ask for a new code. Up to 5 codes a day.</span>
                 @error('code')
                     <span id="code-error" class="err" role="alert">{{ $message }}</span>
@@ -53,5 +53,5 @@
         </form>
     @endunless
 
-    <p class="foot" style="margin: 0"><a href="{{ route($user->dashboardRoute()) }}">Back to dashboard</a></p>
+    <p class="foot"><a href="{{ route($user->dashboardRoute()) }}">Back to dashboard</a></p>
 @endsection

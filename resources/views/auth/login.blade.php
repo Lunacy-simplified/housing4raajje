@@ -25,9 +25,9 @@
         </div>
 
         <div class="fld">
-            <div style="display: flex; justify-content: space-between; gap: 8px">
+            <div class="row">
                 <label for="password">Password</label>
-                <a href="{{ route('password.request') }}" style="font-size: 13px">Forgot password?</a>
+                <a href="{{ route('password.request') }}">Forgot password?</a>
             </div>
             <input id="password" type="password" name="password" required autocomplete="current-password"
                 class="in @error('password') bad @enderror" @error('password') aria-invalid="true" aria-describedby="password-error" @enderror>
@@ -41,11 +41,11 @@
         <button type="submit" class="btn btn-p">Sign in</button>
     </form>
 
-    <div style="border-top: 1px solid var(--line); padding-top: 16px; display: flex; flex-direction: column; gap: 8px">
+    <div class="sep">
         <span class="hint">No account yet?</span>
         <a href="{{ route('register', 'client') }}" class="btn btn-n">Register as a client</a>
         <a href="{{ route('register', 'owner') }}" class="btn btn-n">Register as a property owner</a>
     </div>
 
-    <p class="foot" style="margin: 0">Staff accounts are created by an administrator.</p>
+    <p class="foot">Staff accounts are created by an administrator.</p>
 @endsection

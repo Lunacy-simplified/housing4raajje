@@ -30,6 +30,6 @@
         <button type="submit" class="btn btn-p">Send reset link</button>
     </form>
 
-    <p class="hint" style="margin: 0">The link works once and expires after 15 minutes.</p>
-    <p class="foot" style="margin: 0"><a href="{{ route('login') }}">Back to sign in</a></p>
+    <p class="hint">The link works once and expires after 15 minutes.</p>
+    <p class="foot"><a href="{{ route('login') }}">Back to sign in</a></p>
 @endsection
