@@ -28,7 +28,7 @@
             @enderror
         </div>
 
-        <label class="chk"><input type="checkbox" name="trust_device" value="1"> Don't ask for a code on this device for 30 days</label>
+        <label class="chk switch">Don't ask for a code on this device for 30 days <input type="checkbox" name="trust_device" value="1"></label>
 
         <button type="submit" class="btn btn-p">Verify</button>
     </form>

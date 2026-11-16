@@ -11,7 +11,7 @@
 @section('content')
     <h1 class="t">Register as {{ ucfirst($type) }}</h1>
 
-    <nav class="tabs" aria-label="Account type">
+    <nav class="seg" aria-label="Account type">
         <a href="{{ route('register', 'client') }}" @class(['on' => $type === 'client']) @if ($type === 'client') aria-current="page" @endif>Client</a>
         <a href="{{ route('register', 'owner') }}" @class(['on' => $type === 'owner']) @if ($type === 'owner') aria-current="page" @endif>Property owner</a>
     </nav>

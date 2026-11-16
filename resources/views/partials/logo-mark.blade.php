@@ -2,7 +2,7 @@
     The logo mark only (house + H4R, no tagline), for the top bar of every portal.
 --}}
 <svg class="brand-mark" viewBox="430 225 675 375" role="img" aria-label="H4R">
-    <g fill="#111111">
+    <g fill="currentColor">
         <path d="M440 405 L494 372 V592 H440 Z"></path>
         <rect x="494" y="465" width="102" height="40"></rect>
         <path d="M596 330 L768 233 L968 355 H907 L768 270 L638 345 V520 L596 555 Z"></path>

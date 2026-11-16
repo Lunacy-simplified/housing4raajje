@@ -20,8 +20,8 @@ back**. Stick to that and you can restyle freely without breaking anything.
 3. **Run the tests after every page:** `docker compose exec app php artisan test`.
    The tests check behaviour, not looks, so they must all still pass. If one fails after you
    restyled a page, you most likely renamed a field or changed a route.
-4. **Match the approved prototype** (at least 80% consistent): `H4R_Prototype.html` (P-03 sign-in)
-   and the templates in `ibrahim_waseems_templates/`.
+4. **Follow the design rules in [`docs/design.md`](design.md)** (Apple Human Interface Guidelines,
+   minimal, light and dark mode). They replace the earlier prototype.
 5. Never commit `.env`. Check `git status` before every commit.
 
 ## Getting set up
@@ -52,17 +52,14 @@ Demo accounts (local only, created by `DemoUserSeeder`):
 | Property owner | owner@h4r.local | SecretOwner123! | `/owner` |
 | Client | client@h4r.local | SecretClient123! | `/client` |
 
-## Suggested structure for the shared design
+## Shared design
 
-None of this exists yet. It's a suggestion so that everyone's pages share one design.
+Built and in use. See [`docs/design.md`](design.md) for the rules, tokens and which class to use for what.
 
-- **CSS:** plain CSS files in `public/css/`: `tokens.css` (colours, fonts, spacing),
-  `layout.css` and `components.css`. The prototype's `SPLIT POINT` comments show where to split its CSS.
-- **Layouts:**
-  - `resources/views/layouts/auth.blade.php` for sign-in and registration.
-  - A portal layout (top bar and side navigation) for dashboards and admin pages.
-  - Pages use `@extends('layouts.auth')` and put their content in `@section('content')`.
-- Build the CSS files and layouts **first**. Every page depends on them.
+- **CSS:** one file, `public/css/h4r.css`.
+- **Layouts:** `layouts.auth` (signed-out and single-task pages), `layouts.portal` (staff, sidebar),
+  `layouts.portal-top` (owners and clients, top menu). Pages use `@extends(...)` and put their content
+  in `@section('content')`.
 
 ## Things every page shares
 
@@ -494,4 +491,4 @@ Don't build pages for these yet:
 - [ ] Every field shows its own error with `@error`, and refills with `old()` (except passwords)
 - [ ] `session('status')` shown where this document says so
 - [ ] `docker compose exec app php artisan test`: everything passes
-- [ ] Compared side by side with the prototype
+- [ ] Follows `docs/design.md` (checked in light and dark mode, and at phone width)

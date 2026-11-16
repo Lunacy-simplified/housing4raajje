@@ -36,7 +36,7 @@
             @enderror
         </div>
 
-        <label class="chk"><input type="checkbox" name="remember"> Remember me</label>
+        <label class="chk switch">Remember me <input type="checkbox" name="remember"></label>
 
         <button type="submit" class="btn btn-p">Sign in</button>
     </form>
