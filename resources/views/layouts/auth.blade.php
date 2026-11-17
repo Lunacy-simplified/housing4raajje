@@ -1,6 +1,6 @@
 {{--
     Layout for account pages: sign in, register, MFA, forgot/reset password, staff invite, email and phone verification.
-    A white box in the middle of the off-white page, with the full logo on top.
+    A bordered box in the middle of the white page, with the full logo on top.
 
     How to use it in a page:
         @extends('layouts.auth')

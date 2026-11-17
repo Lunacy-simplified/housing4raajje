@@ -7,7 +7,7 @@
     $unread = $user->unreadNotifications()->count();
 @endphp
 
-<nav class="side" aria-label="Main menu">
+<nav class="side" id="menu" aria-label="Main menu">
     @if ($user->hasRole('system_admin'))
         @include('partials.nav-link', ['route' => 'admin.dashboard', 'label' => 'Overview'])
         <span class="grp">People</span>

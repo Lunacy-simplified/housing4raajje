@@ -8,7 +8,7 @@ Every page uses one stylesheet, `public/css/h4r.css`, and three layouts. Read th
 1. **Clarity.** Every element has a job. If you can't say what it's for, leave it out.
 2. **Deference.** The content (the listing, the form, the table) is the hero. No decoration, gradients,
    icons for the sake of icons, or extra borders.
-3. **Depth.** Show hierarchy with surfaces: grey page, white card, filled field. Not with lines everywhere.
+3. **Depth.** Show hierarchy with surfaces: white page, a card with one hairline border, filled field. No shadows.
 4. **Consistency.** Use the existing classes. A new page should look like it was always there.
 
 ## Minimalism
@@ -18,6 +18,9 @@ Every page uses one stylesheet, `public/css/h4r.css`, and three layouts. Read th
 - Add a CSS rule only when a page uses it. Delete rules nobody uses.
 - No CSS frameworks, no JavaScript frameworks, no web fonts, and no inline `style="..."`.
   The one exception is a width that comes from data, such as the `.meter` bar.
+- **Mostly white, one highlight.** The page and cards are white. Blue (`--accent`) is the only highlight and marks four things:
+  the current menu item, the main button, links and the focus ring. Green, orange and red are for status only.
+  Don't add a colour to decorate.
 
 ## Tokens
 
@@ -29,12 +32,12 @@ Defined once in `:root` in `h4r.css`. Always use the variable, never a raw value
 | Text sizes | 12 caption · 13 footnote/labels · 15 body · 17 inputs · 20 section titles · 28–34 page titles |
 | Spacing | 4/8 grid: `--s-1` 4 · `--s-2` 8 · `--s-3` 12 · `--s-4` 16 · `--s-5` 20 · `--s-6` 24 · `--s-8` 32 · `--s-12` 48 |
 | Corners | `--r-sm` 8 (sidebar rows, segments) · `--r-md` 12 (fields, banners) · `--r-lg` 20 (cards) · `--r-full` (buttons, pills) |
-| Colours | `--accent` (actions), `--link`, `--green` / `--orange` / `--red` (status), `--label` / `--label-2` / `--label-3` (text), `--bg` / `--surface` / `--fill` (layers), `--sep` (hairlines) |
+| Colours | `--accent` (actions), `--link`, `--green` / `--orange` / `--red` (status), `--label` / `--label-2` / `--label-3` (text), `--bg` / `--surface` / `--fill` (layers), `--line` (card and table lines) |
 
 Rules:
 - **Touch targets are at least 44px tall.** Buttons, fields, table rows, page numbers.
 - **Concentric corners.** Inner radius + padding = outer radius (an 8px item inside a card with 12px padding sits in a 20px card).
-- **Hairlines, not borders.** Separators are `.5px solid var(--sep)`.
+- **One thin line.** Card edges and separators are `1px solid var(--line)`. No shadows, no thicker or coloured borders.
 - **Light and dark mode** both come from the tokens. Never hard-code `#fff` or `#000` for text or surfaces.
 - **Status is always words.** "Active", "Not verified"; colour is the second cue, never the only one.
 
@@ -75,6 +78,24 @@ Use these instead of writing the label, control, hint and error by hand:
 
 They refill from `old()` and show the field's validation error by themselves.
 
+## Small screens
+
+Every page must work from a 360px phone to a desktop. The stylesheet does most of it:
+
+| Width | What changes |
+|---|---|
+| Below 900px | The menu folds behind the **Menu** button in the top bar. Tables become stacked rows: one block per record, each value beside its column name. |
+| Below 640px | Body text is 16px, stat tiles sit two to a row, and a card's main button is full width. |
+
+What you need to do on a new page:
+- Put every table in `.card.flush` > `.sx` > `table.tbl` with a `<thead>`. The column names become the labels on a phone,
+  so keep them short. Give an actions column a hidden name: `<th scope="col"><span class="sr">Actions</span></th>`.
+- Never set a fixed width. Use `.fgrid`, `.split`, `.stats` and `.grid`; they reflow by themselves.
+- Check the page at 360px, 768px and 1280px. Nothing may scroll sideways.
+
+`public/js/h4r.js` is the only script (the Menu button and the table labels). Pages still work without it:
+the menu stays open and tables scroll sideways. Don't add more scripts for things HTML and CSS can do.
+
 ## Layouts
 
 - `layouts.auth` for signed-out pages and single-task pages (sign in, codes, verification).
@@ -86,6 +107,6 @@ They refill from `old()` and show the field's validation error by themselves.
 
 - [ ] Only existing classes, or new rules added to `h4r.css` and actually used
 - [ ] No inline styles, no new fonts or libraries
-- [ ] Checked in light **and** dark mode, and at phone width
+- [ ] Checked in light **and** dark mode, at 360px, 768px and 1280px, with nothing scrolling sideways
 - [ ] Everything clickable is at least 44px tall and works with the keyboard (visible focus ring)
 - [ ] `docker compose exec app php artisan test` passes
