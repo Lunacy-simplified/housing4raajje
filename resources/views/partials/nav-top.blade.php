@@ -4,7 +4,7 @@
     $unread = $user->unreadNotifications()->count();
 @endphp
 
-<nav class="tnav" aria-label="Main menu">
+<nav class="tnav" id="menu" aria-label="Main menu">
     @include('partials.nav-link', ['route' => $user->dashboardRoute(), 'label' => 'Home'])
     @if ($user->hasRole('owner'))
         @include('partials.nav-link', ['route' => 'owner.properties.index', 'label' => 'Properties', 'match' => 'owner.properties.*'])

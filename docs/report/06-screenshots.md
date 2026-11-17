@@ -120,3 +120,11 @@ The last one shows dark mode, which the application switches to automatically wh
 **26. Staff property page in dark mode,** including the lease matchmaker's list of matching clients.
 
 ![Dark mode](screenshots/26-dark-mode.png)
+
+## Small screens
+
+Below 900px the menu folds behind a Menu button and each table row becomes a stacked block. Taken at 360px wide.
+
+![Phone: an owner's property list](screenshots/27-phone-property-list.png)
+
+![Phone: the client menu opened](screenshots/28-phone-menu.png)

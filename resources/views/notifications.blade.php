@@ -12,6 +12,7 @@
     </div>
 
     <section class="card flush">
+        <div class="sx">
         <table class="tbl">
             <tbody>
                 @forelse ($notifications as $notification)
@@ -37,5 +38,6 @@
                 @endforelse
             </tbody>
         </table>
+        </div>
     </section>
 @endsection
