@@ -50,7 +50,7 @@ Rules:
 | Page title | `.ph` > `h1.t` + `p.sub`; actions in `.acts`. Add `.crumb` above the title only as a link back to the list the page belongs to |
 | Card | `.card` (add `.flush` for a table inside, `.limit` for a narrow form) |
 | Buttons | `.btn` + `.btn-p` primary · `.btn-s` secondary (tinted) · `.btn-n` neutral · `.btn-d` destructive; `.act` for a text link-button in a table |
-| Status | `<x-pill>`, or `.b` + `.b-ok` / `.b-warn` / `.b-err` / `.b-off`: plain words with a small coloured dot |
+| Status | `<x-pill>`, or `.b` + `.b-ok` (green, done or good) / `.b-warn` (orange, waiting on someone) / `.b-err` (red) / `.b-info` (blue, rented) / `.b-off` (grey): plain words with a small coloured dot |
 | Banner | `.al` + `.al-ok` / `.al-err` (success messages come from `partials/status`) |
 | Field | `.fld` > `label` + `.in` + `.hint` + `.err`; add `.bad` to `.in` on error; `.pre` for a "+960" prefix; `.code` for 6-digit codes |
 | Form grid | `.fgrid` (auto columns); filter bar `.flt` |

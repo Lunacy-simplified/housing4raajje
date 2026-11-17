@@ -142,6 +142,7 @@ h2.h{margin:0;font-size:20px;line-height:1.25;font-weight:600;letter-spacing:-.0
 .b-ok::before{background:var(--green)}
 .b-warn::before{background:var(--orange)}
 .b-err::before{background:var(--red)}
+.b-info::before{background:var(--accent)}
 .b-off{color:var(--label-2)}
 .al{display:flex;gap:var(--s-3);align-items:flex-start;padding:var(--s-3) var(--s-4);border-radius:var(--r-md);font-weight:500}
 .al-ok{background:var(--green-tint);color:var(--green)}
