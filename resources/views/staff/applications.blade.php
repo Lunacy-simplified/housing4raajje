@@ -49,13 +49,16 @@
                             <td>{{ $application->occupants }} {{ Str::plural('person', $application->occupants) }}<small>{{ $application->employer ?? 'No employer given' }} · {{ $application->income_bracket ?? 'income not given' }}</small></td>
                             <td>
                                 @if ($application->status === 'submitted' && $decides)
-                                    <form method="POST" action="{{ route('staff.applications.decide', $application) }}" class="inline">
-                                        @csrf
-                                        @method('PATCH')
-                                        <input name="decision_note" class="in" placeholder="Reason (needed to reject)" aria-label="Reason" maxlength="1000">
-                                        <button type="submit" name="decision" value="approved" class="btn btn-s">Approve</button>
-                                        <button type="submit" name="decision" value="rejected" class="btn btn-d">Reject</button>
-                                    </form>
+                                    <details>
+                                        <summary>Decide</summary>
+                                        <form method="POST" action="{{ route('staff.applications.decide', $application) }}" class="inline">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input name="decision_note" class="in" placeholder="Reason (needed to reject)" aria-label="Reason" maxlength="1000">
+                                            <button type="submit" name="decision" value="approved" class="btn btn-s">Approve</button>
+                                            <button type="submit" name="decision" value="rejected" class="btn btn-d">Reject</button>
+                                        </form>
+                                    </details>
                                 @elseif ($application->lease)
                                     <a href="{{ route('staff.leases.show', $application->lease) }}" class="act">Open lease</a>
                                 @elseif ($application->status === 'approved' && $decides)

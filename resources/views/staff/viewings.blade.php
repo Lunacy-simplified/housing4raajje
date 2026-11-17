@@ -49,33 +49,39 @@
                             <td><x-pill :status="$viewing->status" /></td>
                             <td>
                                 @if ($open)
-                                    <form method="POST" action="{{ route('staff.viewings.schedule', $viewing) }}" class="inline">
-                                        @csrf
-                                        @method('PATCH')
-                                        <input type="datetime-local" name="scheduled_for" class="in" aria-label="Date and time"
-                                            value="{{ $viewing->scheduled_for?->format('Y-m-d\TH:i') }}" required>
-                                        <button type="submit" class="btn btn-s">{{ $viewing->scheduled_for ? 'Rebook' : 'Book' }}</button>
-                                    </form>
-                                    @if ($logs)
-                                        <form method="POST" action="{{ route('staff.viewings.log', $viewing) }}" class="inline">
+                                    <details>
+                                        <summary>{{ $viewing->scheduled_for ? 'Rebook' : 'Book a time' }}</summary>
+                                        <form method="POST" action="{{ route('staff.viewings.schedule', $viewing) }}" class="inline">
                                             @csrf
                                             @method('PATCH')
-                                            <select name="status" class="in" aria-label="Outcome" required>
-                                                <option value="">Outcome</option>
-                                                <option value="completed">Completed</option>
-                                                <option value="no_show">No show</option>
-                                                <option value="declined">Declined</option>
-                                                <option value="cancelled">Cancelled</option>
-                                            </select>
-                                            <select name="feedback_category_id" class="in" aria-label="Main feedback">
-                                                <option value="">Main feedback</option>
-                                                @foreach ($categories as $id => $label)
-                                                    <option value="{{ $id }}">{{ $label }}</option>
-                                                @endforeach
-                                            </select>
-                                            <input name="staff_note" class="in" placeholder="What the client said" aria-label="Staff note" maxlength="1000">
-                                            <button type="submit" class="btn btn-n">Save outcome</button>
+                                            <input type="datetime-local" name="scheduled_for" class="in" aria-label="Date and time"
+                                                value="{{ $viewing->scheduled_for?->format('Y-m-d\TH:i') }}" required>
+                                            <button type="submit" class="btn btn-s">{{ $viewing->scheduled_for ? 'Rebook' : 'Book' }}</button>
                                         </form>
+                                    </details>
+                                    @if ($logs)
+                                        <details>
+                                            <summary>Record outcome</summary>
+                                            <form method="POST" action="{{ route('staff.viewings.log', $viewing) }}" class="inline">
+                                                @csrf
+                                                @method('PATCH')
+                                                <select name="status" class="in" aria-label="Outcome" required>
+                                                    <option value="">Outcome</option>
+                                                    <option value="completed">Completed</option>
+                                                    <option value="no_show">No show</option>
+                                                    <option value="declined">Declined</option>
+                                                    <option value="cancelled">Cancelled</option>
+                                                </select>
+                                                <select name="feedback_category_id" class="in" aria-label="Main feedback">
+                                                    <option value="">Main feedback</option>
+                                                    @foreach ($categories as $id => $label)
+                                                        <option value="{{ $id }}">{{ $label }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <input name="staff_note" class="in" placeholder="What the client said" aria-label="Staff note" maxlength="1000">
+                                                <button type="submit" class="btn btn-n">Save outcome</button>
+                                            </form>
+                                        </details>
                                     @endif
                                 @else
                                     {{ $viewing->feedbackCategory?->label ?? '—' }}

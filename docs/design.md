@@ -26,6 +26,8 @@ Every page uses one stylesheet, `public/css/h4r.css`, and three layouts. Read th
 - **One solid button per screen.** `.btn-p` is the only blue button. Every other button is white with a thin outline.
 - **Short menus.** A menu lists places to work, nothing else. Notifications and the user's name (their profile) sit in the
   top bar. A link that is only needed sometimes, like "Verify phone", shows only while it is needed.
+- **Show the record, fold the form.** A list shows records. A form that is used now and then stays folded behind a
+  link or button until someone asks for it; it is never parked beside the list.
 - **No stock components.** These make a page look machine-made, so we don't use them: a small label above a title,
   tinted pill badges, rows of boxed number tiles, shadows, gradients, and icons or emoji as decoration.
 
@@ -70,8 +72,9 @@ Rules:
 | Codes and IDs | `.mono`: the normal font with evenly spaced digits, not a typewriter font |
 | Listings and photos | `.grid` of `a.card` with an `img.photo`; `.photos` for a gallery |
 | Conversation | `.msgs` > `.msg` (add `.me` for the reader's own messages) |
-| Small form in a table row | `form.inline` with bare `.in` controls (give each an `aria-label`), and `@include('partials.errors')` once above the table |
-| Rarely used action | `<details>` with a `<summary>`, e.g. `partials/escalate` |
+| Small form in a table row | `form.inline` with bare `.in` controls (give each an `aria-label`), and `@include('partials.errors')` once above the table. One short control and a button can sit in the row; anything bigger goes inside a `<details>` |
+| Folded action | `<details>` with a `<summary>` that says what it does ("Decide", "Book a time", "Escalate to manager"). A row shows the record; its forms open when asked for |
+| "New record" form on a list page | `<details class="add">` with `<summary class="btn btn-p">`, above the table. Add `@if ($errors->any()) open @endif` so it reopens with its errors. See `staff/inquiries` |
 
 ### Blade components
 

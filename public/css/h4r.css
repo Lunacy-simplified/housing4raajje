@@ -222,7 +222,13 @@ textarea.in{padding:var(--s-3);min-height:88px;resize:vertical;line-height:1.4}
 /* small forms inside table rows */
 .inline{display:flex;flex-wrap:wrap;gap:var(--s-2);align-items:center}
 .inline .in{width:auto;flex:1 1 140px}
+/* an action that stays folded until it is needed: <details> with a <summary> that reads as a link.
+   In a table row it holds the row's form; .add is the same thing with a button, for a page's "new record" form. */
 details summary{min-height:44px;display:inline-flex;align-items:center;color:var(--link);font-weight:500;cursor:pointer}
+details[open]>summary:not(.btn){color:var(--label)}
+details>form{margin-bottom:var(--s-3)}
+.add>summary{display:inline-flex}
+.add[open]>summary{margin-bottom:var(--s-5)}
 
 /* share of a total, e.g. rejection reasons */
 .meter{height:8px;border-radius:var(--r-full);background:var(--fill-2);overflow:hidden}
