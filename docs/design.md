@@ -21,6 +21,8 @@ Every page uses one stylesheet, `public/css/h4r.css`, and three layouts. Read th
 - **Mostly white, one highlight.** The page and cards are white. Blue (`--accent`) is the only highlight and marks four things:
   the current menu item, the main button, links and the focus ring. Green, orange and red are for status only.
   Don't add a colour to decorate.
+- **No stock components.** These make a page look machine-made, so we don't use them: a small label above a title,
+  tinted pill badges, rows of boxed number tiles, shadows, gradients, and icons or emoji as decoration.
 
 ## Tokens
 
@@ -45,10 +47,10 @@ Rules:
 
 | Need | Use |
 |---|---|
-| Page title | `.ph` > `.crumb` + `h1.t` + `p.sub`; actions in `.acts` |
+| Page title | `.ph` > `h1.t` + `p.sub`; actions in `.acts`. Add `.crumb` above the title only as a link back to the list the page belongs to |
 | Card | `.card` (add `.flush` for a table inside, `.limit` for a narrow form) |
 | Buttons | `.btn` + `.btn-p` primary · `.btn-s` secondary (tinted) · `.btn-n` neutral · `.btn-d` destructive; `.act` for a text link-button in a table |
-| Status pill | `.b` + `.b-ok` / `.b-warn` / `.b-off` |
+| Status | `<x-pill>`, or `.b` + `.b-ok` (green, done or good) / `.b-warn` (orange, waiting on someone) / `.b-err` (red) / `.b-info` (blue, rented) / `.b-off` (grey): plain words with a small coloured dot |
 | Banner | `.al` + `.al-ok` / `.al-err` (success messages come from `partials/status`) |
 | Field | `.fld` > `label` + `.in` + `.hint` + `.err`; add `.bad` to `.in` on error; `.pre` for a "+960" prefix; `.code` for 6-digit codes |
 | Form grid | `.fgrid` (auto columns); filter bar `.flt` |
@@ -56,7 +58,7 @@ Rules:
 | Two options | `.seg` segmented control with `a.on` for the current one |
 | Table | `.card.flush` > `.sx` > `table.tbl`; `.r` right-aligns a cell; empty state `td.empty` |
 | Layout | `.split` > `.wide` + `.narrow`; `.stack` for a vertical column; `.row` for a label and value on one line |
-| Numbers at a glance | `.stats` > `.stat` (a hint and a `<b>` number); make it a link when there's a list behind it |
+| Numbers at a glance | `.stats` > `.stat` (a hint and a `<b>` number): a plain list, label left, number right. Make a row a link when there's a list behind it |
 | Facts | `dl.kv` with `dt` and `dd` pairs |
 | Share of a total | `.meter` > `i` with a percentage width, plus the number in words next to it |
 | Listings and photos | `.grid` of `a.card` with an `img.photo`; `.photos` for a gallery |

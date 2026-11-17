@@ -6,7 +6,6 @@
 @section('content')
     <div class="ph">
         <div>
-            <span class="crumb">Branch</span>
             <h1 class="t">Escalations</h1>
         </div>
     </div>

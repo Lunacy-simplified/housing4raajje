@@ -6,7 +6,6 @@
 @section('content')
     <div class="ph">
         <div>
-            <span class="crumb">Client</span>
             <h1 class="t">Find a home</h1>
             <p class="sub">{{ $properties->total() }} {{ Str::plural('property', $properties->total()) }} available</p>
         </div>

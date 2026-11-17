@@ -6,7 +6,6 @@
 @section('content')
     <div class="ph">
         <div>
-            <span class="crumb">Front desk</span>
             <h1 class="t">Support tickets</h1>
             <p class="sub">Tickets are created by routing an inquiry to a specialist.</p>
         </div>

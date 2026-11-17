@@ -6,7 +6,6 @@
 @section('content')
     <div class="ph">
         <div>
-            <span class="crumb">Owner</span>
             <h1 class="t">Earnings</h1>
             <p class="sub">Rent collected each month, minus the management fee.</p>
         </div>

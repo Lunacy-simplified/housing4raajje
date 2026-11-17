@@ -6,7 +6,6 @@
 @section('content')
     <div class="ph">
         <div>
-            <span class="crumb">System</span>
             <h1 class="t">Audit log</h1>
             <p class="sub">Entries are never edited or deleted.</p>
         </div>

@@ -22,7 +22,7 @@
   /* colours: Apple system palette, accessible variants where text sits on them */
   --accent:#0071E3; --accent-hover:#0077ED; --link:#0066CC; --accent-tint:rgba(0,113,227,.1);
   --green:#1B7A32;  --green-tint:rgba(52,199,89,.14);
-  --orange:#B02E00; --orange-tint:rgba(255,149,0,.16);
+  --orange:#B02E00;
   --red:#D70015;    --red-tint:rgba(255,59,48,.12);
   --label:#1D1D1F; --label-2:#6E6E73; --label-3:#86868B;
   --bg:#FFFFFF; --surface:#FFFFFF; --fill:#F5F5F7; --fill-2:#E8E8ED;
@@ -41,7 +41,7 @@
   :root{
     --accent:#0071E3; --accent-hover:#0A84FF; --link:#2997FF; --accent-tint:rgba(10,132,255,.18);
     --green:#30D158;  --green-tint:rgba(48,209,88,.16);
-    --orange:#FF9F0A; --orange-tint:rgba(255,159,10,.16);
+    --orange:#FF9F0A;
     --red:#FF6961;    --red-tint:rgba(255,69,58,.18);
     --label:#F5F5F7; --label-2:#A1A1A6; --label-3:#8E8E93;
     --bg:#000000; --surface:#1C1C1E; --fill:#2C2C2E; --fill-2:#3A3A3C;
@@ -89,7 +89,7 @@ a{color:var(--link);text-decoration:none;text-underline-offset:.18em} a:hover{te
 .main{flex:1 1 0;min-width:0;box-sizing:border-box;padding:var(--s-8) var(--s-8) var(--s-12);display:flex;flex-direction:column;gap:var(--s-6)}
 .wrap{max-width:1080px;width:100%;box-sizing:border-box;margin:0 auto;padding:var(--s-8) var(--s-6) var(--s-12);display:flex;flex-direction:column;gap:var(--s-6)}
 
-/* page header: large title */
+/* page header: large title; .crumb is only for a link back to the list this page belongs to */
 .ph{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--s-3) var(--s-4)}
 .crumb{font-size:13px;color:var(--label-2)}
 .t{margin:var(--s-1) 0 0;font-size:34px;line-height:1.12;font-weight:700;letter-spacing:-.022em;text-wrap:balance}
@@ -136,11 +136,14 @@ h2.h{margin:0;font-size:20px;line-height:1.25;font-weight:600;letter-spacing:-.0
 .tbl .r{text-align:right;white-space:nowrap}
 .tbl td.mono{white-space:nowrap}
 
-/* status pills and inline banners */
-.b{display:inline-flex;align-items:center;white-space:nowrap;font-size:12px;font-weight:600;line-height:1;padding:5px 10px;border-radius:var(--r-full)}
-.b-ok{background:var(--green-tint);color:var(--green)}
-.b-off{background:var(--fill);color:var(--label-2)}
-.b-warn{background:var(--orange-tint);color:var(--orange)}
+/* status: plain words with a small coloured dot; inline banners */
+.b{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;font-size:13px;font-weight:500;color:var(--label)}
+.b::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--label-3)}
+.b-ok::before{background:var(--green)}
+.b-warn::before{background:var(--orange)}
+.b-err::before{background:var(--red)}
+.b-info::before{background:var(--accent)}
+.b-off{color:var(--label-2)}
 .al{display:flex;gap:var(--s-3);align-items:flex-start;padding:var(--s-3) var(--s-4);border-radius:var(--r-md);font-weight:500}
 .al-ok{background:var(--green-tint);color:var(--green)}
 .al-err{background:var(--red-tint);color:var(--red)}
@@ -197,11 +200,13 @@ select.in{appearance:none;padding-right:36px;background-image:url("data:image/sv
 .auth .foot{margin:0;font-size:13px;color:var(--label-2);text-align:center}
 .auth .row a{display:inline-flex;align-items:center;min-height:44px;font-size:13px}
 
-/* numbers at a glance (dashboards, reports) */
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:var(--s-4)}
-.stat{display:flex;flex-direction:column;gap:var(--s-1);padding:var(--s-5);background:var(--surface);border-radius:var(--r-lg);border:1px solid var(--line);color:var(--label);transition:border-color var(--fast) var(--ease)}
-.stat:hover{text-decoration:none}
-.stat b{font-size:28px;line-height:1.15;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+/* numbers at a glance (dashboards, reports): a plain list, label on the left, number on the right */
+.stats{display:flex;flex-direction:column;max-width:560px;border-top:1px solid var(--line)}
+.stat{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s-4);min-height:44px;box-sizing:border-box;padding:var(--s-3) 0;border-bottom:1px solid var(--line);color:var(--label)}
+.stat .hint{font-size:15px;color:var(--label)}
+.stat b{font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+a.stat:hover{text-decoration:none}
+@media (hover:hover){a.stat:hover .hint{color:var(--link)}}
 
 /* label and value pairs */
 .kv{display:grid;grid-template-columns:minmax(130px,auto) 1fr;gap:var(--s-2) var(--s-4);margin:0}
@@ -210,7 +215,6 @@ select.in{appearance:none;padding-right:36px;background-image:url("data:image/sv
 .price{font-size:20px;font-weight:600;letter-spacing:-.01em}
 
 textarea.in{padding:var(--s-3);min-height:88px;resize:vertical;line-height:1.4}
-.b-err{background:var(--red-tint);color:var(--red)}
 
 /* small forms inside table rows */
 .inline{display:flex;flex-wrap:wrap;gap:var(--s-2);align-items:center}
@@ -226,7 +230,7 @@ details summary{min-height:44px;display:inline-flex;align-items:center;color:var
 .grid .card{padding:0;gap:0;overflow:hidden;color:var(--label)}
 .grid .card{transition:border-color var(--fast) var(--ease)}
 .grid .card:hover{text-decoration:none}
-@media (hover:hover){a.stat:hover,.grid a.card:hover{border-color:var(--accent)}}
+@media (hover:hover){.grid a.card:hover{border-color:var(--accent)}}
 .grid .card>div{padding:var(--s-4);display:flex;flex-direction:column;gap:var(--s-1)}
 .photo{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:var(--fill-2)}
 .photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:var(--s-3)}
@@ -286,10 +290,7 @@ details summary{min-height:44px;display:inline-flex;align-items:center;color:var
   .chip{display:none}
   .card{padding:var(--s-5) var(--s-4);border-radius:16px}
   .card.flush{padding:0}
-  .flt,.stat{border-radius:16px}
-  .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s-3)}
-  .stat{padding:var(--s-4)}
-  .stat b{font-size:24px}
+  .flt{border-radius:16px}
   .kv{grid-template-columns:minmax(0,2fr) minmax(0,3fr)}
   .msg{max-width:88%}
   .ph .acts,.ph .acts .btn{width:100%}

@@ -6,7 +6,6 @@
 @section('content')
     <div class="ph">
         <div>
-            <span class="crumb">Finance</span>
             <h1 class="t">Owner payouts</h1>
             <p class="sub">Rent collected for a month, minus the {{ $feePercent + 0 }}% management fee.</p>
         </div>

@@ -6,7 +6,6 @@
 @section('content')
     <div class="ph">
         <div>
-            <span class="crumb">Branch {{ $branch->branch_no }}</span>
             <h1 class="t">Welcome, {{ auth()->user()->name }}</h1>
             <p class="sub">{{ $branch->name }} branch, {{ now()->format('F Y') }}</p>
         </div>

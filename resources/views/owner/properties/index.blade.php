@@ -6,7 +6,6 @@
 @section('content')
     <div class="ph">
         <div>
-            <span class="crumb">Owner</span>
             <h1 class="t">My properties</h1>
         </div>
         <div class="acts">

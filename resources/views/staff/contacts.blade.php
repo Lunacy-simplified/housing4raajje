@@ -6,7 +6,6 @@
 @section('content')
     <div class="ph">
         <div>
-            <span class="crumb">Front desk</span>
             <h1 class="t">Contacts</h1>
             <p class="sub">Search owners and clients by name, email or phone.</p>
         </div>

@@ -6,7 +6,6 @@
 @section('content')
     <div class="ph">
         <div>
-            <span class="crumb">{{ auth()->user()->role->name }}</span>
             <h1 class="t">Maintenance</h1>
         </div>
     </div>
