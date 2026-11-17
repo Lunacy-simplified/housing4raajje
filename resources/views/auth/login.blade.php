@@ -41,11 +41,5 @@
         <button type="submit" class="btn btn-p">Sign in</button>
     </form>
 
-    <div class="sep">
-        <span class="hint">No account yet?</span>
-        <a href="{{ route('register', 'client') }}" class="btn btn-n">Register as a client</a>
-        <a href="{{ route('register', 'owner') }}" class="btn btn-n">Register as a property owner</a>
-    </div>
-
-    <p class="foot">Staff accounts are created by an administrator.</p>
+    <p class="foot">No account yet? Register as a <a href="{{ route('register', 'client') }}">client</a> or a <a href="{{ route('register', 'owner') }}">property owner</a>.<br>Staff accounts are created by an administrator.</p>
 @endsection

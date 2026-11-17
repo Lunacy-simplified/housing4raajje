@@ -1,8 +1,5 @@
 {{-- Top menu for the owner and client portals. Add a line here when a new page is built. --}}
-@php
-    $user = auth()->user();
-    $unread = $user->unreadNotifications()->count();
-@endphp
+@php($user = auth()->user())
 
 <nav class="tnav" id="menu" aria-label="Main menu">
     @include('partials.nav-link', ['route' => $user->dashboardRoute(), 'label' => 'Home'])
@@ -18,7 +15,5 @@
     @endif
     @include('partials.nav-link', ['route' => 'maintenance.index', 'label' => 'Maintenance', 'match' => 'maintenance.*'])
     @include('partials.nav-link', ['route' => 'messages.index', 'label' => 'Messages', 'match' => 'messages.*'])
-    @include('partials.nav-link', ['route' => 'notifications.index', 'label' => $unread ? "Notifications ($unread)" : 'Notifications'])
-    @include('partials.nav-link', ['route' => 'profile.edit', 'label' => 'Profile'])
-    @include('partials.nav-link', ['route' => 'phone.verification.show', 'label' => 'Verify phone', 'match' => 'phone.verification.*'])
+    @include('partials.account-links', ['class' => 'sm'])
 </nav>

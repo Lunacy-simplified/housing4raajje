@@ -26,7 +26,7 @@
 
             <div class="who">
                 <button type="button" class="btn btn-n menu-btn" aria-expanded="false" aria-controls="menu">Menu</button>
-                <span class="who-t"><b>{{ $user->name }}</b><small>{{ $user->role?->name }}</small></span>
+                @include('partials.account-links', ['class' => 'acct'])
                 @include('partials.logout')
             </div>
         </header>
