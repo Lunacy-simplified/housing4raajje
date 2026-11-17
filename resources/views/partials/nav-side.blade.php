@@ -1,11 +1,9 @@
 {{--
     Side menu for staff portals. Each role only sees links it is allowed to open.
-    Add a line here when a new page is built.
+    Add a line here when a new page is built. Notifications and Profile live in the top bar,
+    and only join this menu on small screens (partials/account-links).
 --}}
-@php
-    $user = auth()->user();
-    $unread = $user->unreadNotifications()->count();
-@endphp
+@php($user = auth()->user())
 
 <nav class="side" id="menu" aria-label="Main menu">
     @if ($user->hasRole('system_admin'))
@@ -39,8 +37,5 @@
         @include('partials.nav-link', ['route' => 'messages.index', 'label' => 'Messages', 'match' => 'messages.*'])
     @endif
 
-    <span class="grp">Account</span>
-    @include('partials.nav-link', ['route' => 'notifications.index', 'label' => $unread ? "Notifications ($unread)" : 'Notifications'])
-    @include('partials.nav-link', ['route' => 'profile.edit', 'label' => 'Profile'])
-    @include('partials.nav-link', ['route' => 'phone.verification.show', 'label' => 'Verify phone', 'match' => 'phone.verification.*'])
+    @include('partials.account-links', ['class' => 'sm'])
 </nav>

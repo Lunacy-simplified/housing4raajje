@@ -1,6 +1,6 @@
 {{--
     Layout for staff portals (admin, branch manager, property specialist, receptionist):
-    top bar + side menu + main area. Only for logged-in users.
+    top bar (logo, notifications, the user's name, log out) + side menu + main area. Only for logged-in users.
 
     How to use it in a page:
         @extends('layouts.portal')
@@ -25,11 +25,9 @@
             <a class="brand" href="{{ route($user->dashboardRoute()) }}" aria-label="H4R home">
                 @include('partials.logo-mark')
             </a>
-            <span class="chip">{{ $user->role?->name }}</span>
-
             <div class="who">
                 <button type="button" class="btn btn-n menu-btn" aria-expanded="false" aria-controls="menu">Menu</button>
-                <span class="who-t"><b>{{ $user->name }}</b><small>{{ $user->email }}</small></span>
+                @include('partials.account-links', ['class' => 'acct'])
                 @include('partials.logout')
             </div>
         </header>
