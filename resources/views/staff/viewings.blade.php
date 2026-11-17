@@ -11,7 +11,6 @@
 
     <div class="ph">
         <div>
-            <span class="crumb">Work</span>
             <h1 class="t">Viewings</h1>
         </div>
     </div>

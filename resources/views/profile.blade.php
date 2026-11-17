@@ -6,7 +6,6 @@
 @section('content')
     <div class="ph">
         <div>
-            <span class="crumb">Account</span>
             <h1 class="t">Profile</h1>
             <p class="sub">{{ $user->email }} · {{ $user->role->name }}</p>
         </div>

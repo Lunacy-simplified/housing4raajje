@@ -6,7 +6,6 @@
 @section('content')
     <div class="ph">
         <div>
-            <span class="crumb">Branch</span>
             <h1 class="t">Branch staff</h1>
             <p class="sub">Salaries are visible to you and the administrator only. Accounts are created by the administrator.</p>
         </div>

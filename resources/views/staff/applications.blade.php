@@ -8,7 +8,6 @@
 
     <div class="ph">
         <div>
-            <span class="crumb">Work</span>
             <h1 class="t">Applications</h1>
         </div>
     </div>

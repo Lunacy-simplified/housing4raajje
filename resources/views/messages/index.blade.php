@@ -6,7 +6,6 @@
 @section('content')
     <div class="ph">
         <div>
-            <span class="crumb">{{ auth()->user()->role->name }}</span>
             <h1 class="t">Messages</h1>
             @unless (auth()->user()->isStaff())
                 <p class="sub">Start a conversation from a property's page. Branch staff can see and answer every message.</p>

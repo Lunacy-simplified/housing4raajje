@@ -6,7 +6,6 @@
 @section('content')
     <div class="ph">
         <div>
-            <span class="crumb">Work</span>
             <h1 class="t">Properties</h1>
             <p class="sub">Listings in your branch. Check each new one before it goes live.</p>
         </div>

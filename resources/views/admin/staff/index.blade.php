@@ -11,7 +11,6 @@
 @section('content')
     <div class="ph">
         <div>
-            <span class="crumb">People</span>
             <h1 class="t">Staff</h1>
             <p class="sub">{{ $staff->total() }} {{ Str::plural('staff member', $staff->total()) }} found</p>
         </div>

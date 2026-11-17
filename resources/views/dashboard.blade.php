@@ -9,7 +9,6 @@
 @section('content')
     <div class="ph">
         <div>
-            <span class="crumb">{{ $portal }}</span>
             <h1 class="t">Welcome, {{ auth()->user()->name }}</h1>
         </div>
     </div>

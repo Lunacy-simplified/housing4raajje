@@ -9,7 +9,6 @@
 @section('content')
     <div class="ph">
         <div>
-            <span class="crumb">System</span>
             <h1 class="t">Master data</h1>
             <p class="sub">The lists other screens choose from. Switching an item off hides it from new records only.</p>
         </div>
